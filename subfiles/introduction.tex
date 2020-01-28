@@ -83,7 +83,8 @@
             \par На данный момент не существует программных комплексов позволяющих удобно вычислять и визуализировать звуковое поле. Наиболее популярным решением является использование различных программ для обработки входных данных, расчёта звукового поля и визуализации решения. Поэтому возникает задача разработки новой программы, позволяющий автоматизировать этот процесс. Основными требованиями к разрабатываемой программе являются:
             \begin{enumerate}
                 \item Реализация численных схем решения модовых параболических уравнений.
-                \item Возможность использования как готовых коэффициентов уравнения, таки коэффициентов, вычисленных с помощью пакета Cambala \cite{cambala}, с указанием необхо­димых параметров среды: плотности среды, батиметрия, гидрология и др.
+                \item Возможность использования как готовых коэффициентов уравнения, так
+и коэффициентов, вычисленных с помощью пакета Cambala \cite{cambala}, с указанием необхо­димых параметров среды: плотности среды, батиметрия, гидрология и др.
                 \item Возможность расчёта и трассировки горизонтальных лучей распространения звука.
                 \item Высокая скорость работы по сравнению с альтернативными методами моделирования.
                 \item Возможность использования популярных форматов данных батиметрии и гидрологии.
@@ -93,18 +94,116 @@
             \end{enumerate}
     \subsection{Обзор существующих методов решения}
         \par На данный момент существует несколько программных продуктов позволяющих вычислять численное решение уравнения Гельмгольца \eqref{eq::3DH}. BELLHOP \cite{bellhop} и Traceo3D \cite{traceo}, основанные на методе суммирования Гауссовых пучков и лучевой теории распространения звука соответственно. Недостатком этих методов является использование геометроакустического приближения, которое является недостаточно точным при моделировании источников звука, имеющих частоту менее 1 кГц. Океанографический институт в Вудс-Хоуле \cite{whoi} и центральная школа Лиона \cite{lyon} имеют закрытые комплексы программ, основанные на решении трёхмерного параболического уравнения \cite{isakson14,lin12,shtrum16}, однако решение таких уравнений требует запредельных затрат памяти и времени, расчёт самых простых задач занимает не менее суток.
-        \paragraph{Аппроксимация оператора квадратного корня}
-        \par Для решения уравнения \eqref{eq::PDMPE} необходимо выполнить линеаризацию оператора квадратного корня. Для этого используется аппроксимация Паде \cite{jensen}
-        \begin{equation}
-            \sqrt{1+L_j}=1+\sum\limits_{i=1}^m\frac{a_{i,m}L_j}{1+b_{i,m}L_j}+O\pa{L_j^{2m+1}}\,,
-        \end{equation}
-        где $m$ --- количество членов аппроксимации, а коэффициенты $a_{i,m}$ и $b_{i,m}$ вычисляются по формулам
-        \begin{align}
-            a_{i,m}&=\frac{2}{2m+1}\sin^2\pa{\frac{i\pi}{2m+1}}\,,\\
-            b_{i,m}&=\cos^2\pa{\frac{i\pi}{2m+1}}\,.
-        \end{align}
-        Используя такую аппроксимацию из уравнения \eqref{eq::PDMPE} получим модовое параболическое уравнение
-        \begin{equation}
-            \frac{\partial\mathcal{A}_j\pa{x,y}}{\partial x}=ik_{j,0}\sum\limits_{i=1}^m\frac{a_{i,m}L_j}{1+b_{i,m}L_j}\mathcal{A}_j\pa{x,y}\,.
-        \end{equation}
+        \par Для визуализации вычислений чаще всего используются специализированные пакеты,например Gnuplot \cite{gnuplot}, Matlab \cite{matlab}, Wolfram Mathematica \cite{wolfram}. Такие программы предлагают широкие возможности для визуализации, однако усложняют процесс работы, добавляя в него дополнительный шаг.
+    \subsection{План работ}
+        \begin{enumerate}
+            \item Реализация численных методов решения модовых параболических уравнений с использованием условий прозрачной границы и учётом неоднородностей среды.
+            \item Реализация расчёта горизонтальных лучей распространения звука.
+            \item Добавление возможности использования различных форматов ввода и вывода данных.
+            \item Реализация пользовательского интерфейса.
+        \end{enumerate}
+    \subsection{Математические методы}
+        \subsubsection{Математическая постановка задачи}
+            \par Необходимо в области $\Omega=\left\{\pa{x,y,z}\big|0\leqslant x\leqslant x_1,y_0\leqslant y\leqslant y_1,0\leqslant z\leqslant z_b\right\}$ найти звуковое поле $p\pa{x,y,z}$ точечного источника, являющееся решением уравнения Гельмгольца
+            \begin{multline}
+                \frac{\partial^2p\pa{x,y,z}}{\partial x^2}+\frac{\partial^2p\pa{x,y,z}}{\partial y^2}+\rho\pa{z}\frac{\partial}{\partial z}\pa{\frac{1}{\rho\pa{z}}\frac{\partial p\pa{x,y,z}}{\partial z}}+\\
+                K^2\pa{z,x}p\pa{x,y,z}=-\delta\pa{x}\delta\pa{y}\delta\pa{z-z_s}\,,
+            \end{multline}
+            в форме модового разложения
+            \begin{equation}
+                p\pa{x,y,z}=\sum\limits_{j=1}^Je^{k_{j,0}x}\mathcal{A}_j\pa{x,y}\varphi_j\pa{z,x,y}\,.
+            \end{equation}
+            наблюдаемого приёмником, расположенным на глубине $z_r$. Модовые амплитуды $\mathcal{A}_j\pa{x,y}$ являются решениями соответствующих задач Коши
+            \begin{equation}\label{eq::WAMPE_problem}
+                \begin{dcases}
+                    \frac{\partial\mathcal{A}_j\pa{x,y}}{\partial x}=ik_{j,0}\pa{\sqrt{1+L_j}-1}\mathcal{A}_j\pa{x,y}\,,\\
+                    \mathcal{A}_j\pa{0,y}=\mathcal{A}_{j,0}\pa{y}\,.
+                \end{dcases}
+            \end{equation}
+            При этом считается, что модововые функции $\varphi_j\pa{z,x,y}$ и соответствующие им волновые числа $k_j\pa{x,y}$ заранее известны из решения спектральной задачи.
+        \subsubsection{Аппроксимация Паде}
+            \par Пусть есть некоторая функция $F\pa{\lambda}$ тогда её аппроксимация Паде может быть записана в виде
+            \begin{equation}
+                F\pa{\lambda}\approx\mathcal{R}\pa{F,l,m}\pa{\lambda}\equiv\frac{P_{l,m}^F\pa{\lambda}}{Q_{l,m}^F\pa{\lambda}}\,,
+            \end{equation}
+            где $P_{l,m}^F\pa{\lambda},Q_{l,m}^F\pa{\lambda}$ обозначают многочлены порядка $l$ и $m$ соответственно \cite{jensen}. Коэффициенты многочленов могут быть получены приравниванием рациональной функции $\nicefrac{P_{l,m}^F\pa{\lambda}}{Q_{l,m}^F\pa{\lambda}}$ к разложению в ряд Тейлора функции $F\pa{\lambda}$, содержащей $l+m+1$ членов.
+        \subsubsection{Аппроксимация оператора квадратного корня}
+            \par Для решения уравнения \eqref{eq::PDMPE} необходимо выполнить линеаризацию оператора квадратного корня с использованием аппроксимации Паде
+            \begin{equation}\label{eq::pade_mpe}
+                \frac{\partial\mathcal{A}_j\pa{x,y}}{\partial x}=ik_{j,0}\pa{\frac{P_{l,m}^F\pa{L_j}}{Q_{l,m}^F\pa{L_j}}-1}\mathcal{A}_j\pa{x,y}\,,
+            \end{equation}
+            где $F\pa{\cdot}=\sqrt{\cdot}$. Используя дискретизацию Крэнка-Николсон \cite{crank} на равномерной сетке $x=nh$, $\mathcal{A}_j^n\sim\mathcal{A}_j\pa{x_n,y}$, уравнение \eqref{eq::pade_mpe} в положительном направлении оси $x$ можно записать виде
+            \begin{equation}\label{eq::CNMPE}
+                D_h^+\mathcal{A}_j^n=ik_{j,0}\pa{\frac{P_{l,m}^F\pa{L_j}}{Q_{l,m}^F\pa{L_j}}-1}\mathcal{A}_j^{\nicefrac{n+1}{2}}\,,
+            \end{equation}
+            где 
+            \begin{align*}
+                D_h^+=\mathcal{A}_j=\frac{\mathcal{A}_j^{n+1}-\mathcal{A}_j^n}{h}\,,&&\mathcal{A}_j^{\nicefrac{n+1}{2}}=\frac{\mathcal{A}_j^{n+1}+\mathcal{A}_j^n}{2}\,.
+            \end{align*}
+            Уравнение \eqref{eq::CNMPE} может быть преобразовано к виду
+            \begin{equation}
+                \mathcal{A}_j^{n+1}=\frac{U\pa{L_j}}{W\pa{L_j}}\mathcal{A}_j^n\,,
+            \end{equation}
+            где
+            \begin{align*}
+                U\pa{L_j}&=\pa{2-ik_{j,0}h}Q_{l,m}^F\pa{L_j}+ik_{j,0}hP_{l,m}^F\pa{L_j}\,,\\
+                W\pa{L_j}&=\pa{2+ik_{j,0}h}Q_{l,m}^F\pa{L_j}-ik_{j,0}hP_{l,m}^F\pa{L_j}\,.
+            \end{align*}
+            многочлены степени $p=\max\pa{l,m}$. Разложив отношение $\nicefrac{U\pa{L_j}}{W\pa{L_j}}$ на простые дроби получим
+            \begin{equation}\label{eq::dPDMPE}
+                \mathcal{A}_j^{n+1}=\pa{1+\sum\limits_{i=1}^p\frac{a_{l,m}^iL_j}{1+b_{l,m}^iL_j}}\mathcal{A}_j^n\,.
+            \end{equation}
+        \subsubsection{Split-step Pad\'e}
+            \par Другой подход к решению \eqref{eq::PDMPE} был предложен Коллинзом \cite{collins}. В его основе лежит смена порядка дискретизации и применения аппроксимации Паде. При достаточно маленьком интервале $\Delta x=h$ уравнение \eqref{eq::PDMPE} может быть формально решено в виде
+            \begin{equation}
+                \mathcal{A}_j^{n+1}=e^{ik_{j,0}h\pa{\sqrt{1+L}-1}}\mathcal{A}_j^n\,.
+            \end{equation}
+            Затем, применяя аппроксимацию Паде для экспоненты в виде разложения на простые дроби
+            \begin{equation}\label{eq::SSPADE}
+                e^{ik_{j,0}h\pa{\sqrt{1+L}-1}}\approx\frac{\tilde{U}\pa{L_j}}{\tilde{W}\pa{L_j}}= 1+\sum\limits_{i=1}^p\frac{\tilde{a}_{l,m}^iL_j}{1+\tilde{b}_{l,m}^iL_j}\,,
+            \end{equation}
+            получим
+            \begin{equation}
+                \mathcal{A}_j^{n+1}=\pa{1+\sum\limits_{i=1}^p\frac{\tilde{a}_{l,m}^iL_j}{1+\tilde{b}_{l,m}^iL_j}}\mathcal{A}_j^n\,.
+            \end{equation}
+        \subsubsection{Дискретизация оператора $L_j$}
+            \par Для дискретизации уравнения \eqref{eq::dPDMPE} на равномерной сетке $y_q=y_0+q\delta$ с шагом $\Delta y=\delta$ используется стандартная конечно-разностная схема
+            \begin{equation}
+                D_\delta^2\mathcal{A}_j^{n+1}=\frac{\mathcal{A}_j^{n+1,q+1}-2\mathcal{A}_j^{n+1,q}+\mathcal{A}_j^{n+1,q-1}}{\delta^2}\,,\quad q\in\mathbb{N}\,,
+            \end{equation}
+            где $\mathcal{A}_j^{n,q}\sim\mathcal{A}_j\pa{x_n,y_q}$. Таким образом, уравнение \eqref{eq::dPDMPE} преобразуется к виду
+            \begin{equation}\label{eq::ddPDMPE}
+                \mathcal{A}_j^{n+1,q}=\pa{1+\sum\limits_{i=1}^p\frac{a_{l,m}^iL_j^\delta}{1+b_{l,m}^iL_j^\delta}}\mathcal{A}_j^{n,q}\,,\quad q\in\mathbb{N}\,,
+            \end{equation}
+            где $k_{j,0}^2L_j^\delta=D_\delta^2+k_j^2+k_{j,0}^2$. Вводятся вспомогательные функции $\mathcal{B}_{j,i}^{n+1,q},i=\overline{1,p}$ такие, что 
+            \begin{align}
+                \pa{1+b_{l,m}^iL_j^\delta}\mathcal{B}_{j,i}^{n+1,q}&=a_{l,m}^iL_j^\delta\mathcal{A}_j^{n,q}\,,&&i=\overline{1,p-1}\,,\\
+                \pa{1+b_{l,m}^pL_j^\delta}\mathcal{B}_{j,p}^{n+1,q}&=\pa{1+\pa{a_{l,m}^p+b_{l,m}^p}L_j^\delta}\mathcal{A}_j^{n,q}\,,&&i=p\,.
+            \end{align}
+            Коэффициенты $\mathcal{B}_{j,i}^{n+1,q}$ могут быть легко найдены обращением трёхдиагональных матриц $\pa{1+b_{l,m}^iL_j^\delta}$, что  приводит к финальному результату
+            \begin{equation}
+                \mathcal{A}_j^{n+1,q}=\sum\limits_{i=1}^p\mathcal{B}_{j,i}^{n+1,q}\,,\quad q\in\mathbb{N}\,.
+            \end{equation}
+            \par Для использования дискретизации оператора $L_j$ с использованием SSP применяется следующий подход, предложенный Коллинзом \cite{collins}. Запишем формально 
+            \begin{equation}
+                \mathcal{A}_j^n\pa{y_{q+1}}=e^{\delta\partial_y}\mathcal{A}_j^n\pa{y_q}=e^{\delta k_{j,0}\sqrt{L_j-\pa{\nicefrac{k_j}{k_{j,0}}-1}}}\mathcal{A}_j^n\pa{y_q}\,,
+            \end{equation}
+            и получим следующее выражение
+            \begin{multline}
+                L_\delta=-\frac{e^{\tau\sqrt{L_j-\pa{\nicefrac{k_j}{k_{j,0}}-1}}}+2+e^{-\tau\sqrt{L_j-\pa{\nicefrac{k_j}{k_{j,0}}-1}}}}{\tau^2}=\\
+                -2\frac{\cosh\pa{\tau\sqrt{L_j-\pa{\nicefrac{k_j}{k_{j,0}}-1}}}-1}{\tau^2}\,,\quad\tau=\delta k_{j,0}\,.
+            \end{multline}
+            Решение этого уравнения относительно $L_j$ позволяет получить функцию, зависящую от $L_j^\delta$
+            \begin{equation}
+                L_j=\Gamma_j\pa{L_j^\delta}=\tau^{-2}\log^2\pa{1-\frac{\tau^2}{2}L_j^\delta+\sqrt{\pa{1-\frac{\tau^2}{2}L_j^\delta}^2-1}}+\frac{k_j}{k_{j,0}}-1\,.
+            \end{equation}
+            Таким образом 
+            \begin{equation}
+                \mathcal{A}_j^{n+1,q}=e^{ik_{j,0}h\pa{\sqrt{1+\Gamma\pa{L_j^\delta}}-1}}\mathcal{A}_j^{n,q}\,.
+            \end{equation}
+            Используя аппроксимацию Паде аналогично \eqref{eq::SSPADE} получим
+            \begin{equation}
+                \mathcal{A}_j^{n+1,q}=\pa{1+\sum\limits_{i=1}^p\frac{\tilde{a}_{l,m}^iL_j^\delta}{1+\tilde{b}_{l,m}^iL_j^\delta}}\mathcal{A}_j^{n,q}\,,\quad q\in\mathbb{N}\,,
+            \end{equation}
+            Полученное дискретное уравнение может быть решено аналогично \eqref{eq::ddPDMPE}.
 \end{document}
