@@ -1,0 +1,192 @@
+\documentclass[10pt, unicode]{beamer}
+
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\setdefaultlanguage{russian}
+\setotherlanguage{english}
+\setsansfont{Fira Sans}
+
+\usepackage{nicefrac}
+
+\usepackage{lmodern}
+
+\newif\ifmetropolis
+\metropolistrue
+
+\title[Моделирование звукового поля]{Комплекс программ для моделирования трёхмерных звуковых полей в сложных неоднородных океанических волноводах}
+\author[Тыщенко А.Г.]{
+    \vbox{\raggedright%
+        Студент группы М9119-09.04.01иибд\\ 
+        Тыщенко Андрей Геннадьевич%
+    }
+    \vskip 20pt%
+    \indent\vbox{\raggedright%
+        Руководитель:\\
+        кандидат физико-математических наук,\\
+        зав. лаб. 3/2 ТОИ ДВО РАН
+        Петров Павел Сергеевич\ifmetropolis\else\vskip -0.5cm\fi%
+    }
+}
+\date{\today}
+
+\newif\ifPS
+%\PStrue
+
+\ifmetropolis
+    \usetheme[progressbar=frametitle,numbering=fraction]{metropolis}
+    \makeatletter
+    \setlength{\metropolis@progressinheadfoot@linewidth}{2pt}
+    \makeatother
+\else
+    \usetheme{CambridgeUS}
+\fi
+
+\setbeamersize{text margin left=3.5mm,text margin right=3.5mm} 
+
+\newcommand{\pa}[1]{\left(#1\right)}
+
+\begin{document}
+    
+    \frame{\thispagestyle{empty}\titlepage}
+    
+    \begin{frame}[fragile]{Звуковое поле}
+        \begin{block}{Уравнение Гельмгольца}
+            \ifmetropolis
+                \smallskip
+            \fi
+            \begin{equation}\label{eq::3DH}
+                \pa{\rho\pa{z}\nabla\cdot\pa{\frac{1}{\rho\pa{z}}\nabla} +  K^2\pa{x,y,z}}p\pa{x,y,z}=-\delta\pa{x}\delta\pa{y}\delta\pa{z-z_s}
+            \end{equation}
+            \begin{align*}
+                K\pa{z}&=\frac{\omega}{c\pa{z}}&&K\pa{z}=\frac{\omega}{c\pa{z}}\pa{1+i\eta\beta}
+            \end{align*}
+            \centering
+            \begin{tabular}{ll}
+                 $\rho\pa{z}$ --- плотность среды & $c\pa{z}$ --- скорость звука\\
+                 $\omega=2\pi f$ --- циклическая частота & $\beta$ --- коэффициент затухания\\
+                 $\eta=\nicefrac{1}{40\pi\log_{10}e}$&
+            \end{tabular}
+        \end{block}
+    \end{frame}
+
+    \begin{frame}[fragile]{Модовое разложение поля}
+        \begin{block}{Модовое разложение}
+            \ifmetropolis
+                \smallskip
+            \fi
+            \begin{equation}
+                p\pa{x,y,z}=\sum\limits_{j=1}^JA_j\pa{x,y}\varphi_j\pa{z,x,y}
+            \end{equation}
+        \end{block}
+        \begin{block}{Уравнение горизонтальной рефракции}
+            \ifmetropolis
+                \smallskip
+            \fi
+            \begin{equation}
+                \frac{\partial^2 A_j}{\partial x^2} + \frac{\partial^2 A_j}{\partial y^2}+k_j^2 (x,y)A_j=-\varphi_j(z_s)\delta(x)\delta(y)
+            \end{equation}
+        \end{block}
+        \begin{block}{Псевдодифференциальное МПУ}
+            \ifmetropolis
+                \smallskip
+            \fi
+            \begin{equation}
+                A_j\pa{x,y}=e^{k_{j,0}x}\mathcal{A}_j\pa{x,y}
+            \end{equation}
+            \begin{equation}
+                \frac{\partial\mathcal{A}_j\pa{x,y}}{\partial x}=ik_{j,0}\pa{\sqrt{1+L_j}-1}\mathcal{A}_j\pa{x,y}
+            \end{equation}
+            \begin{equation}
+                k_{j,0}^2L_j=\frac{\partial^2}{\partial y^2}+k_j^2\pa{x,y}-k_{j,0}^2\nonumber
+            \end{equation}
+        \end{block}
+    \end{frame}
+
+    \begin{frame}[fragile]{Горизонтальные лучи распространения звука}
+        \begin{block}{}
+            \ifmetropolis
+                \smallskip
+            \fi
+            \begin{equation}
+                A_j\pa{x,y}=M_j\pa{x,y}e^{ik_{j,0}S_j\pa{x,y}}+o\pa{\nicefrac{1}{k_{j,0}}}
+            \end{equation}
+        \end{block}
+        \begin{block}{Уравнение Гамильтона-Якоби}
+            \ifmetropolis
+                \smallskip
+            \fi
+            \begin{equation}
+                \pa{\frac{\partial S_j\pa{x,y}}{\partial x}}^2+\pa{\frac{\partial S_j\pa{x,y}}{\partial y}}^2=n_j\pa{x,y}
+            \end{equation}
+            \begin{equation*}
+                n_j\pa{x,y}\equiv \nicefrac{k_j\pa{x,y}}{k_{j,0}}
+            \end{equation*}
+        \end{block}
+        \begin{block}{Гамильтонова система}
+            \ifmetropolis
+                \smallskip
+            \fi
+            \begin{equation}
+                \begin{aligned}
+                    \frac{dx_j\pa{l}}{dl}&=\frac{\xi_j\pa{l}}{n_j\pa{x,y}}\qquad&\frac{d\xi_j\pa{l}}{dl}&=\frac{\partial n_j\pa{x,y}}{\partial x}\\
+                    \frac{dy_j\pa{l}}{dl}&=\frac{\eta_j\pa{l}}{n_j\pa{x,y}}\qquad&\frac{d\eta_j\pa{l}}{dl}&=\frac{\partial n_j\pa{x,y}}{\partial y}\\
+                \end{aligned}
+            \end{equation}
+        \end{block}
+    \end{frame}
+    
+    \begin{frame}[fragile]{Области применения моделирования звука}
+        \begin{block}{}
+            \begin{itemize}
+                \item Оценка влияния антропогенных шумов на морскую фауну
+                \item Акустическая навигация и связь
+            \end{itemize}
+        \end{block}
+        \begin{block}{Проблемы}
+            \begin{itemize}
+                \item ADHOC решения обработки входных данных, расчёта и визуализации звукового поля
+                \item Наличие большого количества форматов входных и выходных данных
+                \item Отсутствие пользовательского интерфейса указания параметров эксперимента и визуализации его результатов
+            \end{itemize}
+        \end{block}
+    \end{frame}
+    
+    \begin{frame}[fragile]{Цель работы}
+        \begin{block}{}
+            Разработка комплекса программ для моделирования трёхмерного звукового поля и лучей распространения звукового сигнала с использованием модового разложения звука, предоставляющего удобный пользовательский интерфейс для проведения вычислительного эксперимента
+        \end{block}
+        \begin{block}{Задачи}
+            \begin{itemize}
+                \item Реализовать численные методы решения уравнения горизонтальной рефракции с использованием аппроксимации Паде произвольного порядка
+                \item Реализовать метод вычисления горизонтальных лучей распространения звука
+                \item Разработать программу для автоматизированного проведения вычислительных экспериментов с возможностью визуализации результатов
+            \end{itemize}
+        \end{block}
+    \end{frame}
+
+    \begin{frame}[fragile]{Обзор существующих решений}
+        \begin{block}{Решение уравнения Гельмгольца}
+            \begin{itemize}
+                \item BELLHOP
+                \item Traceo3D
+                \item Закрытые программные продукты Океанографического института в Вудс-Хоуле и центральной школы Лиона
+            \end{itemize}
+        \end{block}
+        \begin{block}{Визуализация результатов}
+            \begin{itemize}
+                \item Gnuplot
+                \item Matlab
+                \item Wolfram Mathematica
+            \end{itemize}
+        \end{block}
+    \end{frame}
+
+    \begin{frame}
+        \thispagestyle{empty}
+        \addtocounter{framenumber}{-1}
+        \ifPS
+            \centerline{\Huge Спасибо за внимание}
+        \fi
+    \end{frame}
+    
+\end{document}
