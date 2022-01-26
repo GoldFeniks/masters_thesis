@@ -1,0 +1,49 @@
+{
+    "ppm": 10,
+    "y0": -3000,
+    "y1": 3000,
+    "ny": 6001,
+    "x0": 50,
+    "x1": 10000,
+    "nx": 10001,
+    "z0": 10,
+    "z1": 10,
+    "nz": 1,
+    "z_s": 10,
+    "bottom_rhos": [2],
+    "bottom_c1s": [1800],
+    "bottom_c2s": [1800],
+    "init": "ray_simple",
+    "a0": -1.5,
+    "a1":  1.5,
+    "coefficients": {
+        "type": "ssp",
+        "parameters": { "n": 11 }
+    },
+    "input_data": [
+        {
+            "type": "frequencies",
+            "dimensions": [ 1 ],
+            "values": [ 150 ]
+        },
+        {
+            "type": "bathymetry",
+            "dimensions": [
+                2,
+                {
+                    "n": 1001,
+                    "bounds": { "a": -3000, "b":  3000 }
+                }
+            ],
+            "values": "bathymetry.txt"
+        },
+        {
+            "type": "hydrology",
+            "dimensions": [ 2, 2 ],
+            "values": [
+                [1500, 1500],
+                [1500, 1500]
+            ]
+        }
+    ]
+}

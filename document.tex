@@ -5,15 +5,82 @@
 \usepackage{mathtools}
 \usepackage{amssymb}
 \usepackage{nicefrac}
+\usepackage{hyperref}
+\usepackage{minted}
+\usepackage{multirow}
+\usepackage{subcaption}
+\usepackage{placeins}
+\addbibresource{references.bib}
+\graphicspath{{./images/}}
 
 \newcommand{\pa}[1]{\left(#1\right)}
+\newcommand{\code}[2][text]{\mintinline{#1}{#2}}
+\newcommand{\paramrow}[4][-]{\code{#2} & \code{#3} & \code{#1} & #4\\}
+\newcommand{\paramrowlistvalue}[4][]{\code{#2} & \code{#3} & \code{[#1]} & #4\\}
+\newcommand{\niceref}[2]{\hyperref[#1]{#2 \ref{#1}}}
+\DeclareMathOperator{\sech}{sech}
+
+\author{Тыщенко Андрей Геннадьевич}
+\setgroup{М9119-09.04.01иибд}
+\setfaculty{09.04.01 Информатика и вычислительная техника}
+\setprogram{Искусственный интеллект и большие данные}
+\setsupervisor{Петров Павел Сергеевич}{зав. лаб. 3/2 ТОИ ДВО РАН, к.ф.-м.н.}
+\setdirector{Мирин Илья Геннадьевич}{}
+\setdeputy{Сапрыкина Елена Валерьевна}{к.э.н.}
+\setreviewer{Луньков Андрей Аллександрович}{зав. лаб.  НЦВИ ИОФ РАН, к.ф.-м.н.}
+\setexportsupervisor{Сапрыкина Елена Валерьевна}{зам. директора ШЦЭ}
+\setsecretary{Тихонова Татьяна Сергеевна}{}
+\setschool{цифровой экономики}
+\title{Комплекс программ для моделирования трёхмерных звуковых полей в сложных неоднородных океанических волноводах}
+\setconsultant{Кленин Александр Сергеевич}
+\setplace{Школе цифровой экономики}
+\setpracticetitle{Преддипломная практика}
+
+\date{07.07.21}
+
+\newif\ifreviewsonly
+%\reviewsonlytrue
+
+\disablehyphenation
+
+\makeglossaries
+
+\newacronym{pml}{PML}{\hyperref[sec::PML]{Perfectly Matched Layers}}
+\newacronym{ssp}{SSP}{\hyperref[sec::root_ssp]{Split-Step Pad\'e}}
+\newacronym{sel}{SEL}{\hyperref[sec::SEL]{Sound Exposure Level}}
+\newacronym{mpe}{МПУ}{Модовое Параболическое Уравнение}
+\newacronym{wampe}{ШМПУ}{Широкоугольное Модовое Параболическое Уравнение}
 
 \begin{document}
-    \setcounter{page}{2}
-    \maketableofcontents
-    \section{Введение}
-    \subfile{subfiles/introduction.tex}
-    \newpage
-    \bibliographystyle{ugost2008ls}
-    \bibliography{references.bib}
+    \ifreviewsonly
+        \begingroup
+            \setreviewer{Луньков Андрей Аллександрович}{зав. лаб. гидрофизики НЦВИ ИОФ РАН, к.ф.-м.н.}
+            \title{Комплекс программ для моделирования трёхмерных звуковых полей в сложных\hfill\null\\ неоднородных океанических волноводах\hfill\null}
+            \subfile{subfiles/supervisor_review.tex}
+            \subfile{subfiles/review.tex}
+        \endgroup
+    \else
+        \maketitle{thesis}
+        \makethesistitlebackside[1.2]
+        \title{Комплекс программ для моделирования трёхмерных звуковых полей в сложных\hfill\null\\ неоднородных океанических волноводах\hfill\null}
+        \subfile{subfiles/task.tex}
+        \setcounter{page}{4}
+        \subfile{subfiles/abstract.tex}
+        \tableofcontents
+        \subfile{subfiles/introduction.tex}
+        \newpage
+        \printglossary[type=\acronymtype,title={Глоссарий}]
+        \newpage
+        \subfile{subfiles/subject.tex}
+        \newpage
+        \subfile{subfiles/math.tex}
+        \newpage
+        \subfile{subfiles/program.tex}
+        \newpage
+        \subfile{subfiles/conclusion.tex}
+        \newpage
+        \printbibliography
+        \newpage
+        \subfile{subfiles/appendices.tex}
+    \fi
 \end{document}

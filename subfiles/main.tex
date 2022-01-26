@@ -1,0 +1,386 @@
+\documentclass[../document.tex]{subfiles}
+
+\begin{document}
+    \subsection{Описание предметной области}
+        \subsubsection{Оценка влияния антропогенных шумов}
+            \par Моделирование трёхмерных звуковых полей применяется во многих областях исследования и освоения океана, требующих учёта множества параметров сложных неоднородных океанических волноводов.
+            \par С развитием промышленности все больше расширяется хозяйственная деятельность человека, связанная с добычей нефти, газа и разнообразных биоресурсов в акватории мирового океана, в результате которой создаётся огромное количество антропогенных шумов, которые негативно сказываются на морской фауне \cite{noise1, noise2}. Таким образом, возникает задача оценивания и минимизации шумового загрязнения и его воздействия на мировой океан. Существуют два подхода к решению этой задачи: проведение замеров и моделирование. В первом случае проводится некоторое количество измерений плотности звука в воде, по которым строится интерполяционная картина звукового поля. Недостатком такого метода является дороговизна и сложность проведения замеров, поэтому такие данные чаще всего используются для корректировки и проверки точности модельных данных. В свою очередь моделирование требует данных о положении и характеристиках источника звука, а также данных о свойствах среды: батиметрии, гидрологии и структуре дна. Основным преимуществом моделирования является возможность вычисления звукового поля как и уже существующих источников, так и планируемых, что позволяет заранее минимизировать влияние человека на океан. Минусом такого метода является необходимость сбора и обработки изменяющихся данных о состоянии среды, что само по себе является сложной задачей.
+        \subsubsection{Акустическая навигация}
+            \par С каждым годом хозяйственная деятельность человека всё больше осуществляется с использованием автономных подводных аппаратов, требующих наличия стабильных систем навигации и связи, основанных на распространении звука, так как электромагнитное излучение неприменимо в подобных условиях \cite{navigation19,navigation20}. При разработке систем подводной акустической навигации возникает задача определения зон уверенного приёма и поиска взаимного расположения источников звукового сигнала таким образом, чтобы минимизировать зоны акустической тени. Также существует задача расчёта траекторий распространения звука на несущих частотах сигналов от 300 до 500 Гц, с целью определения искривления звуковых лучей для вычисления задержки звукового сигнала при осуществлении подводной навигации.
+        \subsubsection{Модовое представление звукового поля точечного источника}
+            \par Звуковое поле $p\pa{x,y,z}$ (где $z$ обозначает глубину, а  $x,y$ --- координаты горизонтальной плоскости), создаваемое точечным источником в трёхмерном волноводе мелкого моря, расположенным по координатам $x=y=0$, $z=z_s$ и имеющего частоту $f$, описывается трёхмерным уравнением Гельмгольца \cite{jensen}
+            \begin{equation}\label{eq::3DH}
+            \pa{\rho\pa{x,y,z}\nabla\cdot\pa{\frac{1}{\rho\pa{x,y,z}}\nabla} + K\pa{x,y,z}^2}p\pa{x,y,z}=-\delta\pa{x}\delta\pa{y}\delta\pa{z-z_s}
+            \end{equation}
+            где $\rho\pa{x,y,z}$ --- плотность среды. Коэффициент $K\pa{x,y,z}$ определяется двумя способами:
+            \begin{enumerate}
+                \item Без учёта затухания:
+                \begin{equation}\label{eq::K1}
+                  K\pa{x,y,z}=\frac{\omega}{c\pa{x,y,z}}\,,
+                \end{equation}
+                \item С учётом затухания:
+                \begin{equation}\label{eq::K2}
+                    K\pa{x,y,z}=\frac{\omega}{c\pa{x,y,z}}\pa{1+i\eta\beta}\,,
+                \end{equation}
+            \end{enumerate}
+            где $c\pa{x,y,z}$ --- скорость звука, $\omega=2\pi f$ --- циклическая частота, $\beta$ --- коэффициент затухания, $\eta=\frac{1}{40\pi\log_{10}e}$.
+            \newpage
+            \par С использованием техники разделения переменных звуковое поле $p\pa{x,y,z}$ может быть представлено в виде модового разложения:
+            \begin{equation}\label{eq::MD}
+                p\pa{x,y,z}=\sum\limits_{j=1}^\infty A_j\pa{x,y}\varphi_j\pa{z},
+            \end{equation}
+            где $A_j\pa{x,y}$ --- модовые амплитуды, являющиеся решениями так называемого уравнения горизонтальной рефракции
+            \begin{equation}\label{eq::HRE}
+                \pa{\Delta+k_j^2\pa{x,y}}A_j\pa{x,y}=-\varphi_j\pa{z_s}\delta\pa{x}\delta\pa{y}\,.
+            \end{equation}
+            Модовые функции $\varphi_j\pa{z,x,y}$ и соответствующие им горизонтальные волновые числа $k_j\pa{x,y}$ находятся из решения акустической спектральной задачи \cite{jensen}.
+        \subsubsection{Модовые параболические уравнения}
+            \par Для получения параболических аппроксимаций уравнение горизонтальной рефракции \eqref{eq::HRE} представляется в виде
+            \begin{equation}
+                \pa{\frac{\partial}{\partial x}+i\sqrt{k_j^2\pa{x,y}+\frac{\partial^2}{\partial y^2}}}\pa{\frac{\partial}{\partial x}-i\sqrt{k_j^2\pa{x,y}+\frac{\partial^2}{\partial y^2}}}A_j\pa{x,y}=0\,,
+            \end{equation}
+            и выделяется его решение, состоящее из волн, распространяющихся в положительном направлении оси $x$
+            \begin{equation}
+                \pa{\frac{\partial}{\partial x}-i\sqrt{k_j^2\pa{x,y}+\frac{\partial^2}{\partial y^2}}}A_j\pa{x,y}=0\,.
+            \end{equation}
+            Вводя модовое опорное волновое число $k_{j,0}$ и выделяя главную осцилляцию из $A_j\pa{x,y}$
+            \begin{equation}
+                A_j\pa{x,y}=e^{k_{j,0}x}\mathcal{A}_j\pa{x,y}\,,\nonumber
+            \end{equation}
+            получим псевдодифференциальное модовое параболическое уравнение
+            \begin{equation}\label{eq::PDMPE}
+                \frac{\partial\mathcal{A}_j\pa{x,y}}{\partial x}=ik_{j,0}\pa{\sqrt{1+L_j}-1}\mathcal{A}_j\pa{x,y}\,,
+            \end{equation}
+            где 
+            \begin{equation}
+                k_{j,0}^2L_j=\frac{\partial^2}{\partial y^2}+k_j^2\pa{x,y}-k_{j,0}^2\,.\nonumber
+            \end{equation}
+        \subsubsection{Уравнение Гамильтона-Якоби}
+            \par Предполагая, что волновые числа $k_j\pa{x,y}$ являются медленно изменяющейся функцией, решение уравнения \eqref{eq::HRE} с использованием лучевой теории распространения звука может быть выражено в виде
+            \begin{equation}
+                A_j\pa{x,y}=M_j\pa{x,y}e^{ik_{j,0}S_j\pa{x,y}}+o\pa{\nicefrac{1}{k_{j,0}}}\,,
+            \end{equation}
+            где функция $S_j\pa{x,y}$ называется эйконалом и может быть найдена из уравнения Гамильтона-Якоби
+            \begin{equation}\label{eq::hamilton_jacoby}
+                \pa{\frac{\partial S_j\pa{x,y}}{\partial x}}^2+\pa{\frac{\partial S_j\pa{x,y}}{\partial y}}^2=n_j\pa{x,y}\,,
+            \end{equation}
+            где $n_j\pa{x,y}\equiv \nicefrac{k_j\pa{x,y}}{k_{j,0}}$ --- индекс горизонтальной рефракции \cite{burridge}. Решение этого уравнения связано с решением так называемой Гамильновой системы
+            \begin{equation}\label{eq:hamilton_system}
+                \begin{aligned}
+                    \frac{dx_j\pa{l}}{dl}&=\frac{\xi_j\pa{l}}{n_j\pa{x_j,y_j}}\,,\qquad&\frac{d\xi_j\pa{l}}{dl}&=\frac{\partial n_j\pa{x_j,y_j}}{\partial x_j}\,,\\
+                    \frac{dy_j\pa{l}}{dl}&=\frac{\eta_j\pa{l}}{n_j\pa{x_j,y_j}}\,,\qquad&\frac{d\eta_j\pa{l}}{dl}&=\frac{\partial n_j\pa{x_j,y_j}}{\partial y_j}\,,\\
+                \end{aligned}
+            \end{equation}
+            где $l$ является натуральным параметром, обозначающим длину кривой вдоль траектории распространения луча, а $\xi,\eta$ сопряжённые переменные к $x,y$ --- момент. Из решения этой системы определяются траектории горизонтальных лучей распространения звука.
+    \subsection{Неформальная постановка задачи}
+        \par В рамках данной работы необходимо выполнить следующие задачи:
+        \begin{enumerate}
+            \item Исследовать методы моделирования трёхмерного звукового поля в сложных неоднородных океанических волноводах.
+            \item Изучить методы решения МПУ с использованием условий прозрачной границы.
+            \item Разработать комплекс программ для моделирования трёхмерных звуковых полей с учёта неоднородностей среды и возможностью визуализации.
+        \end{enumerate}
+        \subsubsection{Требования к программной реализации}
+            \par На данный момент существует множество программных комплексов, фокусированных на решении какой-то одной мелкой задачи, зачастую являющейся часть чего-то большего, или же направленных на решение какой-то одной конкретной задачи. Поэтому возникает необходимость в разработке новой программы, позволяющей решать некоторый спектр задач, не имея привязанности к определённым параметрам. Основными требованиями к разрабатываемой программе являются:
+            \begin{enumerate}
+                \item Реализация численных схем решения модовых параболических уравнений.
+                \item Вычисление звукового поля на трёхмерной сетке.
+                \item Возможность использования как готовых коэффициентов уравнения, так
+и коэффициентов, вычисленных с помощью пакета Cambala \cite{cambala}, с указанием необхо­димых параметров среды: плотности среды, батиметрия, гидрология и др.
+                \item Возможность расчёта и трассировки горизонтальных лучей распространения звука.
+                \item Возможность расчёта импульса звукового сигнала в произвольных точках среды.
+                \item Вычисление интегральных характеристик, SEL.
+                \item Высокая скорость работы по сравнению с альтернативными методами моделирования.
+            \end{enumerate}
+    \subsection{Обзор существующих методов решения}
+        \par На данный момент существует несколько программных продуктов позволяющих вычислять численное решение уравнения Гельмгольца \eqref{eq::3DH}. BELLHOP \cite{bellhop} и Traceo3D \cite{traceo}, основанные на методе суммирования Гауссовых пучков и лучевой теории распространения звука соответственно. Недостатком этих методов является использование геометроакустического приближения, которое является недостаточно точным при моделировании источников звука, имеющих частоту менее 1 кГц. Океанографический институт в Вудс-Хоуле \cite{whoi} и центральная школа Лиона \cite{lyon} имеют закрытые комплексы программ, основанные на решении трёхмерного параболического уравнения \cite{isakson14,lin12,shtrum16}, однако решение таких уравнений требует запредельных затрат памяти и времени, расчёт самых простых задач занимает не менее суток.
+    \subsection{План работ}
+        \begin{enumerate}
+            \item Реализация численных методов решения модовых параболических уравнений с использованием условий прозрачной границы и учётом неоднородностей среды.
+            \item Реализация расчёта горизонтальных лучей распространения звука.
+            \item Реализация расчёта импульса звукового сигнала.
+            \item Добавление возможности использования различных форматов ввода и вывода данных.
+            \item Реализация пользовательского интерфейса.
+        \end{enumerate}
+    \subsection{Математические методы}
+        \subsubsection{Звуковое поле}
+            \paragraph{Математическая постановка задачи}
+                \par Необходимо в области $\Omega=\left\{\pa{x,y,z}\big|0\leqslant x\leqslant x_1,y_0\leqslant y\leqslant y_1,0\leqslant z\leqslant z_b\right\}$ найти звуковое поле $p\pa{x,y,z}$ точечного источника, являющееся решением уравнения Гельмгольца
+                \begin{multline}
+                    \frac{\partial^2p\pa{x,y,z}}{\partial x^2}+\frac{\partial^2p\pa{x,y,z}}{\partial y^2}+\rho\pa{z}\frac{\partial}{\partial z}\pa{\frac{1}{\rho\pa{z}}\frac{\partial p\pa{x,y,z}}{\partial z}}+\\
+                    K^2\pa{z,x}p\pa{x,y,z}=-\delta\pa{x}\delta\pa{y}\delta\pa{z-z_s}\,,
+                \end{multline}
+                в форме модового разложения
+                \begin{equation}
+                    p\pa{x,y,z}=\sum\limits_{j=1}^Je^{k_{j,0}x}\mathcal{A}_j\pa{x,y}\varphi_j\pa{z,x,y}\,.
+                \end{equation}
+                наблюдаемого приёмником, расположенным на глубине $z_r$. Модовые амплитуды $\mathcal{A}_j\pa{x,y}$ являются решениями соответствующих задач Коши
+                \begin{equation}\label{eq::WAMPE_problem}
+                    \begin{dcases}
+                        \frac{\partial\mathcal{A}_j\pa{x,y}}{\partial x}=ik_{j,0}\pa{\sqrt{1+L_j}-1}\mathcal{A}_j\pa{x,y}\,,\\
+                        \mathcal{A}_j\pa{0,y}=\mathcal{A}_{j,0}\pa{y}\,.
+                    \end{dcases}
+                \end{equation}
+                При этом считается, что модововые функции $\varphi_j\pa{z,x,y}$ и соответствующие им волновые числа $k_j\pa{x,y}$ заранее известны из решения спектральной задачи.
+            \paragraph{Аппроксимация Паде}
+                \par Пусть есть некоторая функция $F\pa{\lambda}$ тогда её аппроксимация Паде может быть записана в виде
+                \begin{equation}
+                    F\pa{\lambda}\approx\mathcal{R}\pa{F,l,m}\pa{\lambda}\equiv\frac{P_{l,m}^F\pa{\lambda}}{Q_{l,m}^F\pa{\lambda}}\,,
+                \end{equation}
+                где $P_{l,m}^F\pa{\lambda},Q_{l,m}^F\pa{\lambda}$ обозначают многочлены порядка $l$ и $m$ соответственно \cite{jensen}. Коэффициенты многочленов могут быть получены приравниванием рациональной функции $\nicefrac{P_{l,m}^F\pa{\lambda}}{Q_{l,m}^F\pa{\lambda}}$ к разложению в ряд Тейлора функции $F\pa{\lambda}$, содержащей $l+m+1$ членов.
+            \paragraph{Аппроксимация оператора квадратного корня}
+                \par Для решения уравнения \eqref{eq::PDMPE} необходимо выполнить линеаризацию оператора квадратного корня с использованием аппроксимации Паде
+                \begin{equation}\label{eq::pade_mpe}
+                    \frac{\partial\mathcal{A}_j\pa{x,y}}{\partial x}=ik_{j,0}\pa{\frac{P_{l,m}^F\pa{L_j}}{Q_{l,m}^F\pa{L_j}}-1}\mathcal{A}_j\pa{x,y}\,,
+                \end{equation}
+                где $F\pa{\cdot}=\sqrt{\cdot}$. Используя дискретизацию Крэнка-Николсон \cite{crank} на равномерной сетке $x=nh$, $\mathcal{A}_j^n\sim\mathcal{A}_j\pa{x_n,y}$, уравнение \eqref{eq::pade_mpe} в положительном направлении оси $x$ можно записать виде
+                \begin{equation}\label{eq::CNMPE}
+                    D_h^+\mathcal{A}_j^n=ik_{j,0}\pa{\frac{P_{l,m}^F\pa{L_j}}{Q_{l,m}^F\pa{L_j}}-1}\mathcal{A}_j^{\nicefrac{n+1}{2}}\,,
+                \end{equation}
+                где 
+                \begin{align*}
+                    D_h^+=\mathcal{A}_j=\frac{\mathcal{A}_j^{n+1}-\mathcal{A}_j^n}{h}\,,&&\mathcal{A}_j^{\nicefrac{n+1}{2}}=\frac{\mathcal{A}_j^{n+1}+\mathcal{A}_j^n}{2}\,.
+                \end{align*}
+                Уравнение \eqref{eq::CNMPE} может быть преобразовано к виду
+                \begin{equation}
+                    \mathcal{A}_j^{n+1}=\frac{U\pa{L_j}}{W\pa{L_j}}\mathcal{A}_j^n\,,
+                \end{equation}
+                где
+                \begin{align*}
+                    U\pa{L_j}&=\pa{2-ik_{j,0}h}Q_{l,m}^F\pa{L_j}+ik_{j,0}hP_{l,m}^F\pa{L_j}\,,\\
+                    W\pa{L_j}&=\pa{2+ik_{j,0}h}Q_{l,m}^F\pa{L_j}-ik_{j,0}hP_{l,m}^F\pa{L_j}\,.
+                \end{align*}
+                многочлены степени $p=\max\pa{l,m}$. Разложив отношение $\nicefrac{U\pa{L_j}}{W\pa{L_j}}$ на простые дроби получим
+                \begin{equation}\label{eq::dPDMPE}
+                    \mathcal{A}_j^{n+1}=\pa{1+\sum\limits_{i=1}^p\frac{a_{l,m}^iL_j}{1+b_{l,m}^iL_j}}\mathcal{A}_j^n\,.
+                \end{equation}
+            \paragraph{Split-step Pad\'e}
+                \par Другой подход к решению \eqref{eq::PDMPE} был предложен Коллинзом \cite{collins}. В его основе лежит смена порядка дискретизации и применения аппроксимации Паде. При достаточно маленьком интервале $\Delta x=h$ уравнение \eqref{eq::PDMPE} может быть формально решено в виде
+                \begin{equation}
+                    \mathcal{A}_j^{n+1}=e^{ik_{j,0}h\pa{\sqrt{1+L}-1}}\mathcal{A}_j^n\,.
+                \end{equation}
+                Затем, применяя аппроксимацию Паде для экспоненты в виде разложения на простые дроби
+                \begin{equation}\label{eq::SSPADE}
+                    e^{ik_{j,0}h\pa{\sqrt{1+L}-1}}\approx\frac{\tilde{U}\pa{L_j}}{\tilde{W}\pa{L_j}}= 1+\sum\limits_{i=1}^p\frac{\tilde{a}_{l,m}^iL_j}{1+\tilde{b}_{l,m}^iL_j}\,,
+                \end{equation}
+                получим
+                \begin{equation}
+                    \mathcal{A}_j^{n+1}=\pa{1+\sum\limits_{i=1}^p\frac{\tilde{a}_{l,m}^iL_j}{1+\tilde{b}_{l,m}^iL_j}}\mathcal{A}_j^n\,.
+                \end{equation}
+            \paragraph{Дискретизация оператора $L_j$}
+                \par Для дискретизации уравнения \eqref{eq::dPDMPE} на равномерной сетке $y_q=y_0+q\delta$ с шагом $\Delta y=\delta$ используется стандартная конечно-разностная схема
+                \begin{equation}
+                    D_\delta^2\mathcal{A}_j^{n+1}=\frac{\mathcal{A}_j^{n+1,q+1}-2\mathcal{A}_j^{n+1,q}+\mathcal{A}_j^{n+1,q-1}}{\delta^2}\,,\quad q\in\mathbb{N}\,,
+                \end{equation}
+                где $\mathcal{A}_j^{n,q}\sim\mathcal{A}_j\pa{x_n,y_q}$. Таким образом, уравнение \eqref{eq::dPDMPE} преобразуется к виду
+                \begin{equation}\label{eq::ddPDMPE}
+                    \mathcal{A}_j^{n+1,q}=\pa{1+\sum\limits_{i=1}^p\frac{a_{l,m}^iL_j^\delta}{1+b_{l,m}^iL_j^\delta}}\mathcal{A}_j^{n,q}\,,\quad q\in\mathbb{N}\,,
+                \end{equation}
+                где $k_{j,0}^2L_j^\delta=D_\delta^2+k_j^2+k_{j,0}^2$. Вводятся вспомогательные функции $\mathcal{B}_{j,i}^{n+1,q},i=\overline{1,p}$ такие, что 
+                \begin{align}
+                    \pa{1+b_{l,m}^iL_j^\delta}\mathcal{B}_{j,i}^{n+1,q}&=a_{l,m}^iL_j^\delta\mathcal{A}_j^{n,q}\,,&&i=\overline{1,p-1}\,,\\
+                    \pa{1+b_{l,m}^pL_j^\delta}\mathcal{B}_{j,p}^{n+1,q}&=\pa{1+\pa{a_{l,m}^p+b_{l,m}^p}L_j^\delta}\mathcal{A}_j^{n,q}\,,&&i=p\,.
+                \end{align}
+                Коэффициенты $\mathcal{B}_{j,i}^{n+1,q}$ могут быть легко найдены обращением трёхдиагональных матриц $\pa{1+b_{l,m}^iL_j^\delta}$, что  приводит к финальному результату
+                \begin{equation}
+                    \mathcal{A}_j^{n+1,q}=\sum\limits_{i=1}^p\mathcal{B}_{j,i}^{n+1,q}\,,\quad q\in\mathbb{N}\,.
+                \end{equation}
+                \par Для использования дискретизации оператора $L_j$ с использованием SSP применяется следующий подход, предложенный Коллинзом \cite{collins}. Запишем формально 
+                \begin{equation}
+                    \mathcal{A}_j^n\pa{y_{q+1}}=e^{\delta\partial_y}\mathcal{A}_j^n\pa{y_q}=e^{\delta k_{j,0}\sqrt{L_j-\pa{\nicefrac{k_j}{k_{j,0}}-1}}}\mathcal{A}_j^n\pa{y_q}\,,
+                \end{equation}
+                и получим следующее выражение
+                \begin{multline}
+                    L_\delta=-\frac{e^{\tau\sqrt{L_j-\pa{\nicefrac{k_j}{k_{j,0}}-1}}}+2+e^{-\tau\sqrt{L_j-\pa{\nicefrac{k_j}{k_{j,0}}-1}}}}{\tau^2}=\\
+                    -2\frac{\cosh\pa{\tau\sqrt{L_j-\pa{\nicefrac{k_j}{k_{j,0}}-1}}}-1}{\tau^2}\,,\quad\tau=\delta k_{j,0}\,.
+                \end{multline}
+                Решение этого уравнения относительно $L_j$ позволяет получить функцию, зависящую от $L_j^\delta$
+                \begin{equation}
+                    L_j=\Gamma_j\pa{L_j^\delta}=\tau^{-2}\log^2\pa{1-\frac{\tau^2}{2}L_j^\delta+\sqrt{\pa{1-\frac{\tau^2}{2}L_j^\delta}^2-1}}+\frac{k_j}{k_{j,0}}-1\,.
+                \end{equation}
+                Таким образом 
+                \begin{equation}
+                    \mathcal{A}_j^{n+1,q}=e^{ik_{j,0}h\pa{\sqrt{1+\Gamma\pa{L_j^\delta}}-1}}\mathcal{A}_j^{n,q}\,.
+                \end{equation}
+                Используя аппроксимацию Паде аналогично \eqref{eq::SSPADE} получим
+                \begin{equation}
+                    \mathcal{A}_j^{n+1,q}=\pa{1+\sum\limits_{i=1}^p\frac{\tilde{a}_{l,m}^iL_j^\delta}{1+\tilde{b}_{l,m}^iL_j^\delta}}\mathcal{A}_j^{n,q}\,,\quad q\in\mathbb{N}\,,
+                \end{equation}
+                Полученное дискретное уравнение может быть решено аналогично \eqref{eq::ddPDMPE}.
+            \paragraph{Начальные условия}
+                \par От выбора начальных условий зависит устойчивость получаемого численного решения. Для параболических уравнений наиболее часто используется начальное условие Гаусса \cite{jensen}
+                \begin{equation}
+                    \mathcal{A}_j\pa{0,y}=\frac{\varphi_j\pa{z_s}}{2\sqrt{\pi}}e^{-k_{j,0}^2\pa{y-y_s}}\,.
+                \end{equation}
+                Однако такое условие создаёт большой численный шум при использовании даже небольшого порядка аппроксимации квадратного корня. Также может быть использовано начальное условие Грина
+                \begin{equation}
+                    \mathcal{A}_j\pa{0,y}=\frac{\varphi_j\pa{z_s}}{2\sqrt{\pi}}\pa{1.4467-0.8402k_{j,0}^2\pa{y-y_s}^2}e^{-\frac{k_{j,0}^2\pa{y-y_s}^2}{1.5256}}\,,
+                \end{equation}
+                которое обеспечивают большую, но всё ещё не идеальную стабильность. 
+                \par Для использования высоких порядков аппроксимации Паде необходимо начальное условие, учитывающее широкоугольные особенности решаемого уравнения. Такое условие может быть получено с использованием лучевой теории распространения звука. Предположим, что при $0\leqslant x\leqslant x_0$, где $x_0$ сравнимо с длинной волны, свойства среды не зависят от $x$, то есть $k_j=k_j\pa{y}$. Тогда, решение \eqref{eq::WAMPE_problem} может быть записано в виде
+                \begin{equation}
+                    \mathcal{A}_j\pa{x,y}=M_j\pa{x,y}e^{ik_{0,j}S_j\pa{x,y}}+o\pa{\nicefrac{1}{k_{0,j}}}\,,
+                \end{equation}
+                где $M_j\pa{x,y}$ --- амплитуда нулевого порядка и
+                $S_j\pa{x,y}$ --- эйконал, удовлетворяющая уравнению Гамильтона-Якоби \eqref{eq::hamilton_jacoby}. Амплитуда $M_j\pa{x,y}$ может быть получена из уравнения переноса вида
+                \begin{multline}
+                    2\pa{\frac{\partial S_j\pa{x,y}}{\partial x}\frac{\partial M_j\pa{x,y}}{\partial x}+\frac{\partial S_j\pa{x,y}}{\partial y}\frac{\partial M_j\pa{x,y}}{\partial y}}+\\\pa{\frac{\partial^2S_j\pa{x,y}}{\partial x^2}+\frac{\partial^2S_j\pa{x,y}}{\partial y^2}}M_j\pa{x,y}=0\,.
+                \end{multline}
+                Оба эти уравнения могут быть получены из решения системы Гамильтона \eqref{eq:hamilton_system} вдоль кривой распространения звукового луча в виде
+                \begin{align}
+                    S_j\pa{l}&=\int\limits_0^ln_j\pa{l}dl\,,\\
+                    M_j\pa{l}&=\frac{M_{j,0}}{n_j\pa{l}}\sqrt{\frac{\cos\alpha}{\nicefrac{\partial y\pa{l,\alpha}}{\partial\alpha}}}\,,
+                \end{align}
+                где $M_{j,0}=\nicefrac{e^{\nicefrac{i\pi}{4}}}{\sqrt{8\pi k_{j,0}}}$ --- амплитуда на расстоянии 1 м. от источника.
+        \subsubsection{Горизонтальные звуковые лучи\label{sec::horizontal_rays}}
+            \paragraph{Математическая постановка задачи}
+                \par Необходимо в области $\left\{\pa{x,y,z_s}0\leqslant x\leqslant x_1,y_0\leqslant y\leqslant y_1\right\}$ вычислить координаты распространения звуковых лучей из источника, имеющего координаты $\pa{0,y_s,z_s}$, под углами распространения $\alpha_0\leqslant\alpha\leqslant\alpha_1$ и значениях натурального параметра кривой $l_0\leqslant l\leqslant l_1$, задаваемые Гамильтовой системой задач Коши
+                \begin{equation}
+                    \begin{aligned}
+                        \begin{dcases}
+                            \frac{dx_j\pa{l}}{dl}=\frac{\xi_j\pa{l}}{n_j\pa{x_j,y_j}}\,,\\
+                            x_j\pa{0}=0\,,
+                        \end{dcases}&\qquad
+                        \begin{dcases}
+                            \frac{d\xi_j\pa{l}}{dl}=\frac{\partial n_j\pa{x_j,y_j}}{\partial x_j}\,,\\
+                            \xi_j\pa{0}=\cos\alpha\,,
+                        \end{dcases}\\
+                        &&\\
+                        \begin{dcases}
+                            \frac{dy_j\pa{l}}{dl}=\frac{\eta_j\pa{l}}{n_j\pa{x_j,y_j}}\,,\\
+                            y_j\pa{0}=y_s\,,
+                        \end{dcases}&\qquad
+                        \begin{dcases}
+                            \frac{d\eta_j\pa{l}}{dl}=\frac{\partial n_j\pa{x_j,y_j}}{\partial y_j}\,,\\
+                            \eta_j\pa{0}=\sin\alpha\,.
+                        \end{dcases}
+                    \end{aligned}
+                \end{equation}
+            \paragraph{Явные методы Рунге-Кутты}
+                \par Явные методы Рунге-Кутты являются семейством численных методов для решения систем обыкновенных дифференциальных уравнений вида
+                \begin{equation}
+                    \begin{dcases}
+                        \boldsymbol{y}^{\prime}_x\pa{x}=\boldsymbol{f}\pa{x,\boldsymbol{y}\pa{x}}\,,\\
+                        \boldsymbol{y}\pa{x_0}=\boldsymbol{y}_0\,,
+                    \end{dcases}
+                \end{equation}
+                где $\boldsymbol{y}:\mathbb{R}\mapsto\mathbb{R}^n$ --- искомая функция, $\boldsymbol{f}:\mathbb{R}^{n+1}\mapsto\mathbb{R}^n$ --- функция зависимости, $\boldsymbol{y}_0\in\mathbb{R}^n$ --- начальное значение функции, $x,x_0\in\mathbb{R}$ --- аргумент и его начальное значение.
+                \par Пусть задана некоторая дискретная сетка\\ $\Omega=\left\{\pa{x_i,\boldsymbol{y}_i}\bigr|x_i=x_{i-1}+h_i,\boldsymbol{y}_i\approx\boldsymbol{y}\pa{x_i},x_i,h_i\in\mathbb{R},\boldsymbol{y}_i\in\mathbb{R}^n\right\}$, тогда явный $s$-шаговый метод Рунге-Кутты может быть записан в виде
+                \begin{equation}
+                    \boldsymbol{y}_{i+1}=\boldsymbol{y}_i+h_i\sum\limits_{j=1}^{s}b_j\boldsymbol{k}_j
+                \end{equation}
+                где $\boldsymbol{k}$ значения функции $\boldsymbol{f}$, вычисленные в специальных промежуточных точках интервала
+                \begin{equation}
+                    \begin{aligned}
+                        \boldsymbol{k_1}&=\boldsymbol{f}\pa{x_i,\boldsymbol{y}_i}\,,\\
+                        \boldsymbol{k_2}&=\boldsymbol{f}\pa{x_i+c_2h_i,\boldsymbol{y}_i+a_{2,1}h_i\boldsymbol{k}_1}\,,\\
+                        \dots&\\
+                        \boldsymbol{k_s}&=\boldsymbol{f}\pa{x_i+c_sh_i,\boldsymbol{y}_i+a_{s,1}h_i\boldsymbol{k}_1+a_{s,2}h_i\boldsymbol{k}_2+\dots+a_{s,s-1}h_i\boldsymbol{k}_{s-1}}
+                    \end{aligned}
+                \end{equation}
+                или в общем виде 
+                \begin{equation}
+                    \boldsymbol{k}_j=\boldsymbol{f}\pa{x_i+c_jh_i,\boldsymbol{y}_i+h_i\sum\limits_{t=1}^{j-1}a_{j,t}\boldsymbol{k}_t}\,,\qquad j=\overline{1,s}\,.
+                \end{equation}
+                Конкретный метод порядка $p$ задаётся коэффициентами $a_{j,t},b_j,c_j\in\mathbb{R}$, часто записываемыми в виде таблицы
+                \begin{equation}
+                    \begin{array}{c|ccccc}
+                        0 & \multicolumn{5}{c}{}\\
+                        c_2 & a_{2,1} & \multicolumn{4}{c}{}\\
+                        c_3 & a_{3,1} & a_{3,2} & \multicolumn{3}{c}{}\\
+                        \vdots & \vdots & \vdots & \ddots & \multicolumn{2}{c}{}\\
+                        c_s & a_{s,1} & a_{s,2} & \dots & a_{s,s-1} & \\
+                        \hline
+                        & b_1 & b_2 & \dots & b_{s-1} & b_s
+                    \end{array}
+                \end{equation}
+                и удовлетворяют условиям
+                \begin{gather}
+                    \sum\limits_{t=1}^{j-1}a_{j,t}=c_j\,,\qquad j=\overline{1,s}\,,\\
+                    \boldsymbol{y}_i-\boldsymbol{y}\pa{x_i}=O\pa{h_i^{p+1}}\,.
+                \end{gather}
+            \paragraph{Плотная выдача}
+                \par При уменьшении шага сетки использование методов Рунге-Кутты становится менее эффективными или невозможным из-за необходимости вычислять промежуточные значения функции $\boldsymbol{f}$. Одним из вариантов ускорения процесса вычислений является так называемая плотная выдача, позволяющая вычислять значения $\boldsymbol{y}\pa{x_i+\theta h_i}$ на всём отрезке $0\leqslant\theta\leqslant1$, при этом в худшем случае используя лишь незначительное по сравнению с основным методом количество вычислений функции $\boldsymbol{f}$. Метод $s^{\star}$-шаговой плотной выдачи может быть в общем виде записан как 
+                \begin{equation}
+                    \boldsymbol{u}_i\pa{\theta}=\boldsymbol{y}_i+h_i\sum\limits_{j=1}^{s^{\star}}q_j\pa{\theta}\boldsymbol{k}_j\,,
+                \end{equation}
+                где 
+                \begin{equation}
+                    \boldsymbol{k}_j=\boldsymbol{f}\pa{x_i+c_jh_i,y_i+h_i\sum\limits_{t=1}^{j-1}a_{j,t}\boldsymbol{k}_t}\,,\qquad j=\overline{1,s^{\star}}\,,
+                \end{equation}
+                при этом $s^{\star}\geqslant s$, а зачастую $s^{\star}\geqslant s+1$, так как значение $\boldsymbol{k}_{s+1}=\boldsymbol{f}\pa{\boldsymbol{x_i}+h_i,\boldsymbol{y}_{i+1}}$ может быть получено с вычислением следующего шага метода при $a_{s+1,t}=b_{t}\,,t=\overline{1,s}$. Порядок $p^{\star}$ плотной выдачи определяется количеством шагов $s^{\star}$ и видом полиномов $q_j\pa{\theta}$ и задаётся условием
+                \begin{equation}
+                    \boldsymbol{u}_i\pa{\theta}-\boldsymbol{y}\pa{x_i+\theta h_i}=O\pa{h_i^{p^{\star}-1}}\,.
+                \end{equation}
+                Было показано, что с использованием следующего представления полиномов $q_j\pa{\theta}$
+                \begin{equation}
+                    q_j\pa{\theta}=\sum\limits_{l=1}^{p^{\star}}q_{j,l}\theta^l
+                \end{equation}
+                порядок $p^{\star}$ может быть достигнут увеличением количества шагов $s^{\star}$ \cite{dense}. Таким образом непрерывный явный метод Рунге-Кутты может быть задан двумя таблицами
+                \begin{equation}
+                    \begin{array}{c|ccccccccc}
+                        0 & \multicolumn{9}{c}{}\\
+                        c_2 & a_{2,1} & \multicolumn{8}{c}{}\\
+                        c_3 & a_{3,1} & a_{3,2} & \multicolumn{7}{c}{}\\
+                        \vdots & \vdots & \vdots & \ddots & \multicolumn{6}{c}{}\\
+                        c_s & a_{s,1} & a_{s,2} & \dots & a_{s,s-1} & \multicolumn{5}{c}{}\\
+                        \hline
+                        1 & b_1 & b_2 & \dots & b_{s-1} & b_s & \multicolumn{4}{c}{}\\
+                        \hline
+                        c_{s+2} & a_{s+2,1} & a_{s+3,2} & \dots & a_{s-1} & a_{s} & a_{s + 1} & \multicolumn{3}{c}{}\\
+                        \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \ddots & \multicolumn{2}{c}{}\\
+                        c_{s^{\star}} & a_{s^{\star},1} & a_{s^{\star},2} & \dots & \dots & \dots & \dots & \dots & a_{s^{\star},s^{\star}-1}
+                    \end{array}\qquad\qquad
+                    \begin{array}{cccc}
+                        q_{1,1} & q_{1,2} & \dots & q_{1,p^{\star}}\\
+                        \vdots & \vdots & \vdots & \vdots\\
+                        q_{s^{\star},1} & q_{s^{\star},2} & \dots & q_{s^{\star},p^{\star}}\\
+                    \end{array}
+                \end{equation}
+            \paragraph{Автоматический контроль шага сетки}
+                \par Методы Рунге-Кутты также позволяют производить автоматический контроль шага с целью оптимизации вычислений и гарантированного поддержания заданной ошибки \cite{dense}. Для этого задаются дополнительные коэффициенты $\hat{b}_j, j=\overline{1,j}$, соответствующие тем же коэффициентам $a_{j,t}$ и $c_j$, обеспечивающие точность $\hat{p}$. На каждом шаге помимо $\boldsymbol{y}_{i+1}$ также вычисляется $\boldsymbol{\hat{y}}_{i+1}$ и производится оценка ошибки
+                \begin{equation}
+                    err=\sqrt{\frac{1}{n}\sum\limits_{l=1}^n\pa{\frac{y_{i+1,l}-\hat{y}_{y+1,l}}{Atol+\max\pa{\left|y_{i,l}\right|, \left|y_{y+1,l}\right|}\cdot Rtol}}^2}
+                \end{equation}
+                с последующим обновлением шага сетки
+                \begin{equation}
+                    \hat{h}=h_i\cdot\pa{\nicefrac{1}{err}}^{\nicefrac{1}{q+1}}
+                \end{equation}
+                где $q=\min\pa{p,\hat{p}}$. Для увеличения вероятности принятия нового шага на следующем этапе вычислений вводится коэффициент $fac$, который часто выбирается как $fac=0.8\,,0.9\,,\pa{0.25}^{\nicefrac{1}{q+1}}\,,\pa{0.38}^{\nicefrac{1}{q+1}}$. Также для увеличения стабильности вводятся коэффициенты $facmax$ и $facmin$, ограничивающие скорость изменения размера шага. Таким образом,
+                \begin{equation}
+                    \hat{h}=h_i\cdot\min\pa{facmax,\max\pa{facmin,fac\cdot\pa{\nicefrac{1}{err}}^{\nicefrac{1}{q+1}}}},.
+                \end{equation}
+                Затем, если $err\leqslant1$ новый шаг сетки принимается и продолжается вычисление решения уравнения с шагом $h_{i+1}=\hat{h}$. Иначе новый шаг отвергается и вычисления производятся заново при $h_i=\hat{h}$.
+        \subsubsection{Импульс звукового сигнала}
+            \paragraph{Математическая постановка задачи}
+                \par Требуется в области $\Omega=\left\{\pa{x,y,z}\bigr|x_0\leqslant x\leqslant x_1,y_0\leqslant y\leqslant y_1,0\leqslant z\leqslant z_b\right\}$ вычислить в точках приёма $R=\left\{\pa{x,y,z}\in\Omega\right\}$ импульс сигнала в источнике $S=\pa{x_0, y_s, z_s}$, задаваемого функцией $g\pa{t}\,,t_0\leqslant t\leqslant t_1$. Импульс $I_r\pa{t}$ в приёмнике $r$ в спектральной области Фурье определяется следующей функцией (здесь и далее оператор $\hat{\pa{\cdot}}$ означает функцию в спектральной области)
+                \begin{equation}
+                    \hat{I}_r\pa{\xi}=\overline{\hat{P}\pa{x_r,y_r,z_r, \xi}\cdot e^{-i\tau\omega\pa{\xi}}}\,,
+                \end{equation}
+                где $\omega\pa{\xi}=2\pi f\pa{\xi}$ --- циклическая частота источника, $f\pa{\xi}$ --- частота источника, $\tau$ --- время движения звука из источника в приёмник, $\overline{\pa{\cdot}}$ --- оператор комплексного сопряжения, $\hat{P}$ --- функция сигнала в приёмнике
+                \begin{equation}
+                    \hat{P}\pa{x,y,z,\xi}=p\pa{x,y,z,f\pa{\xi}}\cdot\overline{\hat{g}}\pa{\xi}\,,
+                \end{equation}
+                здесь $p\pa{x,y,z,f\pa{\xi}}$ --- звуковое поле источника, вычисленное для частоты $f\pa{\xi}$.
+            \paragraph{Преобразование Фурье}
+                \par Преобразование Фурье~\cite{zorich} --- операция, сопоставляющая одной функции вещественной переменной другую функцию вещественной переменной. Эта новая функция описывает коэффициенты при разложении исходной функции на элементарные составляющие --- гармонические колебания с разными частотами. Преобразование Фурье функции $f$ вещественной переменной является интегральным и задаётся следующей формулой:
+                \begin{equation}
+                    \hat{f}\pa{\xi}=\frac{1}{\sqrt{2\pi}}\int\limits_{-\infty}^\infty f\pa{t}e^{-it\xi}dt
+                \end{equation}
+                Также справедлива обратная формула, если интеграл имеет смысл:
+                \begin{equation}
+                    f\pa{t}=\frac{1}{\sqrt{2\pi}}\int\limits_{-\infty}^\infty\hat{f}\pa{\xi}e^{it\xi}d\xi
+                \end{equation}
+                Важные свойства преобразования Фурье:
+                \begin{subequations}
+                    \begin{enumerate}
+                        \item Линейность:
+                        \begin{equation}
+                        \widehat{\pa{\alpha f+\beta g}}=\alpha\hat{f}+\beta\hat{g},\quad\alpha,\beta\in\mathbb{R}
+                        \end{equation}
+                        \item Дифференцирование:
+                        \begin{equation}
+                        \widehat{f^{\pa{n}}}=\pa{i\xi}^n\hat{f}
+                        \end{equation}
+                    \end{enumerate}		
+                \end{subequations}	
+\end{document}

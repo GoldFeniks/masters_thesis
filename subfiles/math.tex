@@ -1,0 +1,421 @@
+\documentclass[../document.tex]{subfiles}
+
+\begin{document}
+	\section{Математические методы}
+		\subsection{Звуковое поле}
+			\subsubsection{Математическая постановка задачи}
+				\par Необходимо в области $\Omega=\left\{\pa{x,y,z}\big|0\leqslant x\leqslant x_1,y_0\leqslant y\leqslant y_1,0\leqslant z\leqslant z_b\right\}$ найти звуковое поле $p\pa{x,y,z}$ точечного источника, являющееся решением уравнения Гельмгольца
+				\begin{multline}
+					\frac{\partial^2p\pa{x,y,z}}{\partial x^2}+\frac{\partial^2p\pa{x,y,z}}{\partial y^2}+\rho\pa{z}\frac{\partial}{\partial z}\pa{\frac{1}{\rho\pa{z}}\frac{\partial p\pa{x,y,z}}{\partial z}}+\\
+					K^2\pa{z,x}p\pa{x,y,z}=-\delta\pa{x}\delta\pa{y}\delta\pa{z-z_s}\,,
+				\end{multline}
+				в форме модового разложения
+				\begin{equation}
+					p\pa{x,y,z}=\sum\limits_{j=1}^Je^{k_{j,0}x}\mathcal{A}_j\pa{x,y}\varphi_j\pa{z,x,y}\,.
+				\end{equation}
+				наблюдаемого приёмником, расположенным на глубине $z_r$. Модовые амплитуды $\mathcal{A}_j\pa{x,y}$ являются решениями соответствующих задач Коши
+				\begin{equation}\label{eq::WAMPE_problem}
+					\begin{dcases}
+						\frac{\partial\mathcal{A}_j\pa{x,y}}{\partial x}=ik_{j,0}\pa{\sqrt{1+L_j}-1}\mathcal{A}_j\pa{x,y}\,,\\
+						\mathcal{A}_j\pa{0,y}=\mathcal{A}_{j,0}\pa{y}\,.
+					\end{dcases}
+				\end{equation}
+				При этом считается, что модововые функции $\varphi_j\pa{z,x,y}$ и соответствующие им волновые числа $k_j\pa{x,y}$ заранее известны из решения спектральной задачи.
+			\subsubsection{Аппроксимация Паде}
+				\par Пусть есть некоторая функция $F\pa{\lambda}$ тогда её аппроксимация Паде может быть записана в виде
+				\begin{equation}\label{eq::pade}
+					F\pa{\lambda}\approx\mathcal{R}\pa{F,l,m}\pa{\lambda}\equiv\frac{P_{l,m}^F\pa{\lambda}}{Q_{l,m}^F\pa{\lambda}}\,,
+				\end{equation}
+				где $P_{l,m}^F\pa{\lambda},Q_{l,m}^F\pa{\lambda}$ обозначают многочлены порядка $l$ и $m$ соответственно \cite{jensen}. Коэффициенты многочленов могут быть получены приравниванием рациональной функции $\nicefrac{P_{l,m}^F\pa{\lambda}}{Q_{l,m}^F\pa{\lambda}}$ к разложению в ряд Тейлора функции $F\pa{\lambda}$, содержащей $l+m+1$ членов.
+			\subsubsection{Аппроксимация оператора квадратного корня\label{sec::root_wampe}}
+				\par Для решения уравнения \eqref{eq::PDMPE} необходимо выполнить линеаризацию оператора квадратного корня с использованием аппроксимации Паде
+                \begin{equation}\label{eq::pade_root}
+                    ik_{j,0}\pa{\sqrt{1+L_j}-1}\approx\frac{P_{l,m}\pa{L_j}}{Q_{l,m}\pa{L_j}}\,,
+                \end{equation}
+                тогда
+				\begin{equation}\label{eq::pade_mpe}
+					\frac{\partial\mathcal{A}_j\pa{x,y}}{\partial x}=\frac{P_{l,m}\pa{L_j}}{Q_{l,m}\pa{L_j}}\mathcal{A}_j\pa{x,y}\,.
+				\end{equation}
+				Используя дискретизацию Крэнка-Николсон \cite{crank} на равномерной сетке $x=nh$, $\mathcal{A}_j^n\sim\mathcal{A}_j\pa{x_n,y}$, уравнение \eqref{eq::pade_mpe} в положительном направлении оси $x$ можно записать виде
+				\begin{equation}\label{eq::CNMPE}
+					D_h^+\mathcal{A}_j^n=\frac{P_{l,m}\pa{L_j}}{Q_{l,m}\pa{L_j}}\mathcal{A}_j^{\nicefrac{n+1}{2}}\,,
+				\end{equation}
+				где 
+				\begin{align*}
+					D_h^+=\mathcal{A}_j=\frac{\mathcal{A}_j^{n+1}-\mathcal{A}_j^n}{h}\,,&&\mathcal{A}_j^{\nicefrac{n+1}{2}}=\frac{\mathcal{A}_j^{n+1}+\mathcal{A}_j^n}{2}\,.
+				\end{align*}
+				Тогда, уравнение \eqref{eq::CNMPE} может быть преобразовано к виду
+				\begin{equation}
+					\mathcal{A}_j^{n+1}=\frac{U\pa{L_j}}{W\pa{L_j}}\mathcal{A}_j^n\,,
+				\end{equation}
+				где
+				\begin{alignat*}{3}
+					U\pa{L_j}&=-&hP_{l,m}\pa{L_j}-2Q_{l,m}\pa{L_j}\,,\\
+					W\pa{L_j}&= &hP_{l,m}\pa{L_j}-2Q_{l,m}\pa{L_j}\,,
+				\end{alignat*}
+				многочлены степени $p=\max\pa{l,m}$. Положив $l\leqslant m$ и разложив отношение $\nicefrac{U\pa{L_j}}{W\pa{L_j}}$ на простые дроби, получим
+				\begin{equation}\label{eq::dPDMPE}
+					\mathcal{A}_j^{n+1}=\pa{a_{l,m}^0+\sum\limits_{i=1}^p\frac{a_{l,m}^i}{1+b_{l,m}^iL_j}}\mathcal{A}_j^n\,.
+				\end{equation}
+			\subsubsection{Split-step Pad\'e\label{sec::root_ssp}}
+				\par Другой подход к решению \eqref{eq::PDMPE} был предложен Коллинзом \cite{collins}. В его основе лежит смена порядка дискретизации и применения аппроксимации Паде. При достаточно маленьком интервале $\Delta x=h$ уравнение \eqref{eq::PDMPE} может быть формально решено в виде
+				\begin{equation}
+					\mathcal{A}_j^{n+1}=e^{ik_{j,0}h\pa{\sqrt{1+L}-1}}\mathcal{A}_j^n\,.
+				\end{equation}
+				Затем, применяя аппроксимацию Паде для экспоненты  в виде разложения на простые дроби аналогично аппроксимации квадратного корня
+				\begin{equation}\label{eq::SSPADE}
+					e^{ik_{j,0}h\pa{\sqrt{1+L}-1}}\approx\frac{\tilde{U}\pa{L_j}}{\tilde{W}\pa{L_j}}=\tilde{a}_{l,m}^0+\sum\limits_{i=1}^p\frac{\tilde{a}_{l,m}^i}{1+\tilde{b}_{l,m}^iL_j}\,,
+				\end{equation}
+				получим
+				\begin{equation}\label{eq::dSSPADE}
+					\mathcal{A}_j^{n+1}=\pa{\tilde{a}_{l,m}^0+\sum\limits_{i=1}^p\frac{\tilde{a}_{l,m}^i}{1+\tilde{b}_{l,m}^iL_j}}\mathcal{A}_j^n\,.
+				\end{equation}
+                Очевидно, что полиномы $\tilde{U}\pa{L_j},\tilde{W}\pa{L_j}$ отличаются от $U\pa{L_j},W\pa{L_j}$, также как и коэффициенты их разложения на простые дроби $\tilde{a}_{l,m}^i, \tilde{b}_{l,m}^i$ и $a_{l,m}^i,b_{l,m}^i$. Однако, в остальном уравнения \eqref{eq::dPDMPE} и \eqref{eq::dSSPADE} полностью идентичны. В дальнейшем символ $\tilde{\pa{\cdot}}$ будет опущен, так как все рассматриваемые методы могут быть применены к обоим формам. 
+			\subsubsection{Дискретизация оператора $L_j$}
+				\par Для дискретизации уравнения \eqref{eq::dPDMPE} на равномерной сетке $y_q=y_0+q\delta$ с шагом $\Delta y=\delta$ используется стандартная конечно-разностная схема
+				\begin{equation}\label{eq::D2}
+					D_\delta^2\mathcal{A}_j^{n+1}=\frac{\mathcal{A}_j^{n+1,q+1}-2\mathcal{A}_j^{n+1,q}+\mathcal{A}_j^{n+1,q-1}}{\delta^2}\,,\quad q\in\mathbb{N}\,,
+				\end{equation}
+				где $\mathcal{A}_j^{n,q}\sim\mathcal{A}_j\pa{x_n,y_q}$. Таким образом, уравнение \eqref{eq::dPDMPE} преобразуется к виду
+				\begin{equation}\label{eq::ddPDMPE}
+					\mathcal{A}_j^{n+1,q}=\pa{a_{l,m}^0+\sum\limits_{i=1}^p\frac{a_{l,m}^i}{1+b_{l,m}^iL_j^\delta}}\mathcal{A}_j^{n,q}\,,\quad q\in\mathbb{N}\,,
+				\end{equation}
+				где $k_{j,0}^2L_j^\delta=D_\delta^2+k_j^2-k_{j,0}^2$. Будем искать $\mathcal{A}_j^{n+1,q}$ в виде
+                \begin{equation}
+                    \mathcal{A}_j^{n+1,q}=a_{l,m}^0\mathcal{A}_j^{n,q}+\sum\limits_{i=1}^pa_{l,m}^i\mathcal{B}_{j,i}^{n+1,q}\,,
+                \end{equation}
+                тогда
+                \begin{equation}
+                    a_{l,m}^0\mathcal{A}_j^{n,q}+\sum\limits_{i=1}^pa_{l,m}^i\mathcal{B}_{j,i}^{n+1,q}=\pa{a_{l,m}^0+\sum\limits_{i=1}^p\frac{a_{l,m}^i}{1+b_{l,m}^iL_j^\delta}}\mathcal{A}_j^{n,q}\,.
+                \end{equation}
+                Приравнивая слагаемые при одинаковом $i$, получим набор выражений, из которых могут быть найдены значения вспомогательных функций $\mathcal{B}_{j,i}^{n+1,q}$
+                \begin{equation}\label{eq::BEQ}
+                    \pa{1+b_{l,m}^iL_j^\delta}\mathcal{B}_{j,i}^{n+1,q}=\mathcal{A}_j^{n,q}\,,\quad i=\overline{1,p}\,.
+                \end{equation}
+                Используя равенства \eqref{eq::D2} и $k_{j,0}^2L_j^\delta=D_\delta^2+k_j^2-k_{j,0}^2$, получим
+                \begin{equation}
+                    \underset{\alpha_{j,i}}{\underbrace{\frac{b_{l,m}^i}{k_0^2\delta^2}}}\mathcal{B}_{j,i}^{n+1,q-1}+\underset{\beta_{j,i}}{\underbrace{\pa{1+\frac{b_{l,m}^i}{k_0^2}\pa{k_j^2-k_0^2-\frac{2}{\delta^2}}}}}\mathcal{B}_{j,i}^{n+1,q}+\underset{\gamma_{j,i}}{\underbrace{\frac{b_{l,m}^i}{k_{j,0}^2\delta^2}}}\mathcal{B}_{j,i}^{n+1,q-1}=\mathcal{A}_j^{n,q}\,.
+                \end{equation}
+                Таким образом, коэффициенты $\mathcal{B}_{j,i}^{n+1,q}$ могут быть легко найдены обращением матриц с диагоналями $\alpha_{j,i},\beta_{j,i},\gamma_{j,i}$ методом прогонки \cite{abramov}.
+            \subsubsection{Коэффициенты аппроксимации Паде\label{sec::PADE}}
+                \par Пусть требуется вычислить аппроксимацию Паде некоторой функции $F\pa{\lambda}$ в виде \eqref{eq::pade}. Также, положим, что $l\leqslant m$, и будем искать разложение аппроксимации на простые дроби в виде
+                \begin{equation}
+                    \frac{P_{l,m}^F\pa{\lambda}}{Q_{l,m}^F\pa{\lambda}}=\frac{\prescript{0}{}{\alpha}_{l,m}^F+\sum\limits_{i=1}^l\prescript{i}{}{\alpha}_{l,m}^F}{1+\sum\limits_{i=1}^m\prescript{i}{}{\beta}_{l,m}^F}=\prescript{0}{}{a}_{l,m}^F+\sum\limits_{i=1}^m\frac{\prescript{i}{}{a}_{l,m}^F}{1+\prescript{i}{}{b}_{l,m}^F\lambda}\,.
+                \end{equation}
+                \paragraph{Вычисление коэффициентов полиномов}
+                    Пусть известно разложение функции $F\pa{\lambda}$ в ряд Тейлора вида
+                    \begin{equation}
+                        F\pa{\lambda}\approx T_{l+m}^F\pa{\lambda}=c_0^F+\sum\limits_{i=1}^{l+m}c_i^F\lambda^n+o\pa{\lambda^{l+m}}\,,
+                    \end{equation}
+                    тогда
+                    \begin{equation}
+                        c_0^F+\sum\limits_{i=1}^{l+m}c_i^F\lambda^n=\frac{\prescript{0}{}{\alpha}_{l,m}^F+\sum\limits_{i=1}^l\prescript{i}{}{\alpha}_{l,m}^F}{1+\sum\limits_{i=1}^m\prescript{i}{}{\beta}_{l,m}^F}\,.
+                    \end{equation}
+                    Коэффициенты $\prescript{i}{}{\alpha}_{l,m}^F$ и $\prescript{i}{}{\beta}_{l,m}^F$ могут быть найдены из решения системы линейных алгебраических уравнений
+                    \begin{equation}
+                        \begin{alignedat}{4}
+                            \prescript{0}{}{\alpha}_{l,m}^F&=c_0^F\,,&&\\
+                            \prescript{1}{}{\alpha}_{l,m}^F&=c_1^F&+&\prescript{1}{}{\beta}_{l,m}^Fc_0^F\,,\\
+                            \prescript{2}{}{\alpha}_{l,m}^F&=c_2^F&+&\prescript{1}{}{\beta}_{l,m}^Fc_1^F+\prescript{2}{}{\beta}_{l,m}^Fc_0^F\,,\\
+                            \vdots\quad&\quad\ \ \vdots&&\quad\vdots\\
+                            \prescript{l}{}{\alpha}_{l,m}^F&=c_l^F&+&\sum\limits_{i=1}^l\prescript{i}{}{\beta}_{l,m}^Fc_{l-i}^F\,,\\
+                        \end{alignedat}\qquad
+                        \begin{alignedat}{4}
+                            0&=c_{l+1}^F&+&\sum\limits_{i=1}^{\min\pa{l+1,m}}\prescript{i}{}{\beta}_{l,m}^Fc_{l-i+1}^F\,,\\
+                            0&=c_{l+2}^F&+&\sum\limits_{i=1}^{\min\pa{l+2,m}}\prescript{i}{}{\beta}_{l,m}^Fc_{l-i+2}^F\,,\\
+                            \vdots&\quad\ \ \vdots&&\qquad\vdots\\
+                            0&=c_{l+m}^F&+&\quad\sum\limits_{i=1}^{m}\quad\prescript{i}{}{\beta}_{l,m}^Fc_{l-i+m}^F\,.
+                        \end{alignedat}
+                    \end{equation}
+                    Таким образом, $\prescript{i}{}{\alpha}_{l,m}^F$ явно выражены через коэффициенты $\prescript{i}{}{\beta}_{l,m}^F$, которые могут найдены из решения правой системы уравнений.
+                    \par В большинстве случаев выбор $l=m$ достаточно точно приближает аппроксимируемую функцию, однако в некоторых случаях использование $\theta$-комбинации \cite{chui,xavier} аппроксимаций с порядками полиномов $l=m$ и $l=m-1$ позволяет получить более точное решение. Пусть $\prescript{i}{}{\alpha}_{m,m}^F,\prescript{i}{}{\beta}_{m,m}^F$ и $\prescript{i}{}{\alpha}_{m-1,m}^F,\prescript{i}{}{\beta}_{m-1,m}^F$ коэффициенты соответствующих полиномов, тогда их $\theta$-комбинация при $\theta\in\left[0,1\right]$ может быть вычислена как
+                    \begin{equation}
+                        \begin{aligned}
+                            \prescript{i}{\theta}{\alpha}_{m,m}^F&=\theta\prescript{i}{}{\alpha}_{m,m}^F+\pa{1-\theta}\prescript{i}{}{\alpha}_{m-1,m}^F\,,\quad i=\overline{0,m-1}\,,\\
+                            \prescript{m}{\theta}{\alpha}_{m,m}^F&=\theta\prescript{m}{}{\alpha}_{m,m}^F\,,\\
+                            \prescript{i}{\theta}{\beta}_{m,m}^F&=\theta\prescript{i}{}{\beta}_{m,m}^F+\pa{1-\theta}\prescript{i}{}{\beta}_{m-1,m}^F\,,\quad i=\overline{1,m}\,.
+                        \end{aligned}
+                    \end{equation}
+                \paragraph{Вычисление разложения на простые дроби}
+                    \par Пусть полиномы $P_{l,m}^F\pa{\lambda},Q_{l,m}^F\pa{\lambda}$ имеют только простые корни $\prescript{i}{}{p}_{l,m}^F$ и $\prescript{i}{}{q}_{l,m}^F$ соответственно, тогда разложение их частного на простые дроби методом Хэвисайда \cite{heavyside} может быть записано как
+                    \begin{equation}
+                        \begin{gathered}
+                            \frac{P_{l,m}^F\pa{\lambda}}{Q_{l,m}^F\pa{\lambda}}=\prescript{0}{}{a}_{l,m}^F+\sum\limits_{i=1}^m\frac{\prescript{i}{}{a}_{l,m}^F}{\lambda-\prescript{i}{}{q}_{l,m}^F}=\prescript{0}{}{a}_{l,m}^F+\sum\limits_{i=1}^m\frac{\prescript{i}{}{a}_{l,m}^F}{1+\prescript{i}{}{b}_{l,m}^F\lambda}\,,\\
+                            \prescript{i}{}{b}_{l,m}^F=-\pa{\prescript{i}{}{q}_{l,m}^F}^{-1}\,,\\
+                            \prescript{i}{}{a}_{l,m}^F=\prescript{i}{}{b}_{l,m}^F\frac{\sum\limits_{j=1}^l\prescript{i}{}{q}_{l,m}^F-\prescript{j}{}{p}_{l,m}^F}{\sum\limits_{\substack{j=1\\i\ne j}}^m\prescript{i}{}{q}_{l,m}^F-\prescript{j}{}{q}_{l,m}^F}\,,\\
+                            \prescript{0}{}{a}_{l,m}^F=\prescript{0}{}{\alpha}_{l,m}^F-\sum\limits_{i=1}^m\prescript{i}{}{a}_{l,m}^F\,.
+                        \end{gathered}
+                    \end{equation}
+                    Полиномы $P_{l,m}^F\pa{\lambda}$ и $Q_{l,m}^F\pa{\lambda}$ в общем случае имеют комплексные коэффициенты, корни которых являются собственными значениями матрицы компаньона \cite{numerical_recipes}
+                    \begin{equation}
+                        \begin{pmatrix}
+                            -\frac{a_m-1}{a_m} & -\frac{a_m-2}{a_m} & \cdots & -\frac{a_1}{a_m} & -\frac{a_0}{a_m}\\
+                            1 & 0 & \cdots & 0 & 0\\
+                            0 & 1 & \cdots & 0 & 0\\
+                            \vdots & \vdots & \ddots & \vdots & \vdots\\
+                            0 & 0 & \cdots & 1 & 0
+                        \end{pmatrix}\,,
+                    \end{equation}
+                    где $a_i$ коэффициенты полинома.
+                \paragraph{Разложение в ряд Тейлора оператора квадратного корня и экспоненты}
+                    \par Коэффициенты разложения оператора квадратного корня $ik_{j,0}\pa{\sqrt{1+L_j}-1}$ могут быть выражены формулой
+                    \begin{equation}
+                        c_0=0\,,\quad c_p=ik_{0,j}\frac{\pa{\frac{1}{2}}_p}{p!},\quad p=\overline{1,n}\,,
+                    \end{equation}
+                    где $\pa{x}_p=\prod\limits_{k=0}^{p-1}\pa{x-k}$ -- убывающий факториал.
+                    \par Коэффициенты разложения экспоненты $e^{ik_{j,0}h\pa{\sqrt{1+L}-1}}$ могут быть получены из рекуррентного соотношения
+                    \begin{equation}
+                        \begin{aligned}
+                            c_0&=1\,,\\
+                            c_1&=\frac{ik_{j,0}h}{2}\,,\\
+                            c_p&=\frac{\pa{ik_{j,0}h}^2c_{p-2}-\pa{4p^2+6p+2}c_{p-1}}{4\pa{p+1}\pa{p+2}}\,,\quad p=\overline{2,n}\,.
+                        \end{aligned}
+                    \end{equation}
+            \subsubsection{Граничные условия}
+                \par Одной из особенностей \acrshort{mpe} является то, что их решение всегда рассмат­ривается в неограниченной области, в отличие от решения «обычных», или «вер­тикальных», параболических уравнений в подводной акустике, которое вычис­ляется в нескольких слоях, имеющих в качестве верхней границы поверхность океана и, как минимум в теории, некоторую границу на дне моря. Таким образом, искусственное ограничение вычислительной области является обязательным при численном решении \acrshort{mpe}.
+                \paragraph{Perfectly matching layers\label{sec::PML}}
+                    \par Впервые \acrshort{pml} метод для граничных условий был показан Беренджером для уравнений Максвелла \cite{berenger}, а позднее Леви \cite{levy}, Лу и Чжу \cite{lu} исследовали применимость этого метода для решения параболических уравнений. В основе \acrshort{pml} лежит расширение вычислительной области с целью плавного поглощения волн исходящих из неё. Пусть требуется найти решение уравнения \eqref{eq::PDMPE} в области $\Omega=\left[0,x_1\right]\times\left[y_0,y_1\right]$. Сформируем новую область $\overline{\Omega}=\left[0,x_1\right]\times\left[y_0-\varepsilon,y_1+\varepsilon\right]$, расширив $\Omega$ на $\varepsilon$ с обоих сторон вдоль оси $y$. Заменим оператор $L_j$ в уравнении \eqref{eq::PDMPE} оператором $L_j^{PML}$, определяемым как
+                    \begin{equation}\label{eq::LPML}
+                        k_{j,0}^2L_j^{PML}=\frac{1}{1+i\beta\pa{y}}\frac{\partial}{\partial y}\frac{1}{1+i\beta\pa{y}}\frac{\partial}{\partial y}+k_j^2+k_{j,0}^2\,,
+                    \end{equation}
+                    где $\beta\pa{y}$ -- некоторая гладкая функция, монотонно убывающая на интервале\\ $\left[y_0-\varepsilon,y_0\right)$, возрастающая на $\left(y_1,y_1+\varepsilon\right]$, и $\beta\pa{y}=0$ при $y\in\left[y_0,y_1\right]$. Таким образом, оператор $L_j^{PML}$ совпадает с оператором $L_j$ внутри области $\Omega$. На границах $y_0-\varepsilon$, $y_1+\varepsilon$ устанавливаются стандартные однородные условия Дирихле
+                    \begin{equation}
+                        \mathcal{A}_j\bigr|_{y=y_0-\varepsilon}=\mathcal{A}_j\bigr|_{y=y_1+\varepsilon}=0\,.
+                    \end{equation}
+                    Таким образом, применимость \acrshort{pml} граничных условий зависит от значения параметра $\varepsilon$, который должен быть существенно большим, чтобы погладить исходящие волны, и функции $\beta\pa{y}$, которая в свою очередь должна существенно гладко достигать своего максимального значения при погружении в \acrshort{pml}, так, при слишком быстром возрастании исходящие волны будут отражаться внутри поглощающего слоя.
+                    \par В рамках данной работы была использована следующая функция $\beta\pa{y}$
+                    \begin{equation}\label{eq::betay}
+                        \beta\pa{y}=\beta_0\pa{\frac{\left|y-y_b\right|}{\varepsilon}}^3=\beta_0\zeta^3\equiv\beta\pa{\zeta}\,,\quad\zeta\in\left[0, 1\right]\,,
+                    \end{equation}
+                    где $y_b$ -- соответствующая граница области $\Omega$, $\beta_0\in\mathbb{R}_{+}$ -- параметр масштаба.
+                \paragraph{Дискретизация оператора $L_j^{PML}$}
+                    \par Для дискретизации оператора $L_j^{PML}$ на равномерной сетке $y_q=y_0-\varepsilon+q\delta$ используется стандартная конечно-разностная схема для первой производной с половинным шагом
+                    \begin{equation}\label{eq::D1}
+                        D^1_{\nicefrac{\delta}{2}}F^q=\frac{F^{q+\nicefrac{1}{2}}-F^{q-\nicefrac{1}{2}}}{\delta}\,.
+                    \end{equation}
+                    Таким образом, выражение $\eqref{eq::BEQ}$ преобразуется к виду 
+                    \begin{equation}
+                        \pa{1+b_{l,m}^i\prescript{q}{\delta}{L_j^{PML}}}\mathcal{B}_{j,i}^{n+1,q}=\mathcal{A}_j^{n,q}\,,\quad i=\overline{1,p}\,,
+                    \end{equation}
+                    где
+                    \begin{equation}\label{eq::LQDPML}
+                        k_{j,0}^2\prescript{q}{\delta}{L_j^{PML}}=\frac{1}{1+i\beta\pa{y_q}}D_{\nicefrac{q}{2}}^1\pa{\frac{1}{1+i\beta\pa{y_q}}D_{\nicefrac{q}{2}}^1}+k_j^2-k_{j,0}^2\,.
+                    \end{equation}
+                    Используя равенства \eqref{eq::D1} и \eqref{eq::LQDPML}, получим
+                    \begin{multline}
+                        \underset{\tilde{\alpha}_{j,i}^q}{\underbrace{\frac{b_{l,m}^i\mu_q\mu_{q-\nicefrac{1}{2}}}{k_0^2\delta^2}}}\mathcal{B}_{j,i}^{n+1,q-1}+\underset{\tilde{\beta}_{j,i}^q}{\underbrace{\pa{1+\frac{b_{l,m}^i}{k_{j,0}^2}\pa{k_j^2-k_{j,0}^2-\frac{\mu_q}{\delta^2}\pa{\mu_{q-\nicefrac{1}{2}}+\mu_{q+\nicefrac{1}{2}}}}}}}\mathcal{B}_{j,i}^{n+1,q}+\\\underset{\tilde{\gamma}_{j,i}^q}{\underbrace{\frac{b_{l,m}^i\mu_q\mu_{q+\nicefrac{1}{2}}}{k_0^2\delta^2}}}\mathcal{B}_{j,i}^{n+1,q+1}=\mathcal{A}_j^{n,q}\,,
+                    \end{multline}
+                    где $\mu_q=\nicefrac{1}{\pa{1+i\beta\pa{y_q}}}$. Так как оператор $L_j^{PML}$ совпадает с оператором $L_j$ внутри области $\Omega$, значения вспомогательных функций $\mathcal{B}_{j,i}^{n,q}$ в расширенной области $\overline{\Omega}$ могут быть найдены обращением матриц методом прогонки \cite{abramov} с диагоналями $\tilde{\alpha}_{j,i}^q,\tilde{\beta}_{j,i}^q,\tilde{\gamma}_{j,i}^q$ на интервалах $\left[y_0-\varepsilon,y_0\right)$, $\left(y_1,y_1+\varepsilon\right]$ и $\alpha_{j,i},\beta_{j,i},\gamma_{j,i}$ на отрезке $\left[y_0,y_1\right]$.
+			\subsubsection{Начальные условия}
+				\paragraph{Начальные условия Гаусса и Грина}
+					\par От выбора начальных условий зависит устойчивость получаемого численного решения. Для параболических уравнений наиболее часто используется начальное условие Гаусса \cite{jensen}
+					\begin{equation}\label{eq::gauss}
+						\mathcal{A}_j\pa{0,y}=\frac{\varphi_j\pa{z_s}}{2\sqrt{\pi}}e^{-k_{j,0}^2\pa{y-y_s}}\,.
+					\end{equation}
+					Однако такое условие создаёт большой численный шум при использовании даже небольшого порядка аппроксимации квадратного корня. Также может быть использовано начальное условие Грина
+					\begin{equation}\label{eq::greene}
+						\mathcal{A}_j\pa{0,y}=\frac{\varphi_j\pa{z_s}}{2\sqrt{\pi}}\pa{1.4467-0.8402k_{j,0}^2\pa{y-y_s}^2}e^{-\frac{k_{j,0}^2\pa{y-y_s}^2}{1.5256}}\,,
+					\end{equation}
+					которое обеспечивают большую, но всё ещё не идеальную стабильность.
+				\paragraph{Лучевые начальные условия}\label{sec::ray_starters}
+					\par Для использования высоких порядков аппроксимации Паде необходимо начальное условие, учитывающее широкоугольные особенности решаемого уравнения. Такое условие может быть получено с использованием лучевой теории распространения звука. Предположим, что при $0\leqslant x\leqslant x_0$, где $x_0$ сравнимо с длинной волны, свойства среды не зависят от $x$, то есть $k_j=k_j\pa{y}$. Тогда, решение \eqref{eq::WAMPE_problem} может быть записано в виде
+					\begin{equation}
+						\mathcal{A}_j\pa{x,y}=M_j\pa{x,y}e^{ik_{0,j}S_j\pa{x,y}}+o\pa{\nicefrac{1}{k_{0,j}}}\,,
+					\end{equation}
+					где $M_j\pa{x,y}$ --- амплитуда нулевого порядка, удовлетворяющая уравнению переноса \eqref{eq::transfer},
+					$S_j\pa{x,y}$ --- функция эйконала, удовлетворяющая уравнению Гамильтона-Якоби \eqref{eq::hamilton_jacoby}. 
+					Оба эти уравнения могут быть получены из решения системы Гамильтона \eqref{eq:hamilton_system} вдоль кривой распространения звукового луча в виде
+					\begin{align}
+						S_j\pa{l}&=\int\limits_0^ln_j\pa{l}dl\,,\\
+						M_j\pa{l}&=\frac{M_{j,0}}{n_j\pa{l}}\sqrt{\frac{\cos\alpha}{\nicefrac{\partial y\pa{l,\alpha}}{\partial\alpha}}}\,,
+					\end{align}
+					где $M_{j,0}=\nicefrac{e^{\nicefrac{i\pi}{4}}}{\sqrt{8\pi k_{j,0}}}$ --- амплитуда на расстоянии 1 м. от источника, $n_j\pa{l}=\nicefrac{k_j\pa{l}}{k_{j,0}}$ -- показатель горизонтального преломления.
+                    \par Так как значения функций $S_j\pa{x,y}$ и $M_j\pa{x,y}$ вычисляются лишь на небольшом расстоянии $x_0$, в большинстве случаев будет достаточно начального условия рассчитанного для однородной среды при $k_j=\pa{x,y}=k_{j,0}$. В таком случае получим
+                    \begin{equation}\label{eq::ray_simple}
+                        \begin{aligned}
+                            S_j\pa{y}&=r\pa{y}\,,\\
+                            M_j\pa{y}&=\frac{M_{j,0}}{\sqrt{r\pa{y}}}\,,\\
+                            r\pa{y}&=\sqrt{x_0^2+y^2}\,.
+                        \end{aligned}
+                    \end{equation}
+		\subsection{Трассировка лучей, соответствующих вертикальным модам\label{sec::horizontal_rays}}
+			\subsubsection{Математическая постановка задачи}
+				\par Необходимо в области $\left\{\pa{x,y,z_s}0\leqslant x\leqslant x_1,y_0\leqslant y\leqslant y_1\right\}$ вычислить координаты распространения лучей, соответствующих вертикальным модам, из источника, имеющего координаты $\pa{0,y_s,z_s}$, под углами распространения $\alpha_0\leqslant\alpha\leqslant\alpha_1$ и значениях натурального параметра кривой $l_0\leqslant l\leqslant l_1$, задаваемые Гамильтовой системой задач Коши
+				\begin{equation}
+					\begin{aligned}
+						\begin{dcases}
+							\frac{dx_j\pa{l}}{dl}=\frac{\xi_j\pa{l}}{n_j\pa{x_j,y_j}}\,,\\
+							x_j\pa{0}=0\,,
+						\end{dcases}&\qquad
+						\begin{dcases}
+							\frac{d\xi_j\pa{l}}{dl}=\frac{\partial n_j\pa{x_j,y_j}}{\partial x_j}\,,\\
+							\xi_j\pa{0}=\cos\alpha\,,
+						\end{dcases}\\
+						&&\\
+						\begin{dcases}
+							\frac{dy_j\pa{l}}{dl}=\frac{\eta_j\pa{l}}{n_j\pa{x_j,y_j}}\,,\\
+							y_j\pa{0}=y_s\,,
+						\end{dcases}&\qquad
+						\begin{dcases}
+							\frac{d\eta_j\pa{l}}{dl}=\frac{\partial n_j\pa{x_j,y_j}}{\partial y_j}\,,\\
+							\eta_j\pa{0}=\sin\alpha\,.
+						\end{dcases}
+					\end{aligned}
+				\end{equation}
+			\subsubsection{Явные методы Рунге-Кутты}
+				\par Явные методы Рунге-Кутты являются семейством численных методов для решения систем обыкновенных дифференциальных уравнений вида
+				\begin{equation}
+					\begin{dcases}
+						\boldsymbol{y}^{\prime}_x\pa{x}=\boldsymbol{f}\pa{x,\boldsymbol{y}\pa{x}}\,,\\
+						\boldsymbol{y}\pa{x_0}=\boldsymbol{y}_0\,,
+					\end{dcases}
+				\end{equation}
+				где $\boldsymbol{y}:\mathbb{R}\mapsto\mathbb{R}^n$ --- искомая функция, $\boldsymbol{f}:\mathbb{R}^{n+1}\mapsto\mathbb{R}^n$ --- функция зависимости, $\boldsymbol{y}_0\in\mathbb{R}^n$ --- начальное значение функции, $x,x_0\in\mathbb{R}$ --- аргумент и его начальное значение.
+				\par Пусть задана некоторая дискретная сетка\\ $\Omega=\left\{\pa{x_i,\boldsymbol{y}_i}\bigr|x_i=x_{i-1}+h_i,\boldsymbol{y}_i\approx\boldsymbol{y}\pa{x_i},x_i,h_i\in\mathbb{R},\boldsymbol{y}_i\in\mathbb{R}^n\right\}$, тогда явный $s$-шаговый метод Рунге-Кутты может быть записан в виде
+				\begin{equation}
+					\boldsymbol{y}_{i+1}=\boldsymbol{y}_i+h_i\sum\limits_{j=1}^{s}b_j\boldsymbol{k}_j
+				\end{equation}
+				где $\boldsymbol{k}$ значения функции $\boldsymbol{f}$, вычисленные в специальных промежуточных точках интервала
+				\begin{equation}
+					\begin{aligned}
+						\boldsymbol{k_1}&=\boldsymbol{f}\pa{x_i,\boldsymbol{y}_i}\,,\\
+						\boldsymbol{k_2}&=\boldsymbol{f}\pa{x_i+c_2h_i,\boldsymbol{y}_i+a_{2,1}h_i\boldsymbol{k}_1}\,,\\
+						\dots&\\
+						\boldsymbol{k_s}&=\boldsymbol{f}\pa{x_i+c_sh_i,\boldsymbol{y}_i+a_{s,1}h_i\boldsymbol{k}_1+a_{s,2}h_i\boldsymbol{k}_2+\dots+a_{s,s-1}h_i\boldsymbol{k}_{s-1}}
+					\end{aligned}
+				\end{equation}
+				или в общем виде 
+				\begin{equation}
+					\boldsymbol{k}_j=\boldsymbol{f}\pa{x_i+c_jh_i,\boldsymbol{y}_i+h_i\sum\limits_{t=1}^{j-1}a_{j,t}\boldsymbol{k}_t}\,,\qquad j=\overline{1,s}\,.
+				\end{equation}
+				Конкретный метод порядка $p$ задаётся коэффициентами $a_{j,t},b_j,c_j\in\mathbb{R}$, часто записываемыми в виде таблицы
+				\begin{equation}
+					\begin{array}{c|ccccc}
+						0 & \multicolumn{5}{c}{}\\
+						c_2 & a_{2,1} & \multicolumn{4}{c}{}\\
+						c_3 & a_{3,1} & a_{3,2} & \multicolumn{3}{c}{}\\
+						\vdots & \vdots & \vdots & \ddots & \multicolumn{2}{c}{}\\
+						c_s & a_{s,1} & a_{s,2} & \dots & a_{s,s-1} & \\
+						\hline
+						& b_1 & b_2 & \dots & b_{s-1} & b_s
+					\end{array}
+				\end{equation}
+				и удовлетворяют условиям
+				\begin{gather}
+					\sum\limits_{t=1}^{j-1}a_{j,t}=c_j\,,\qquad j=\overline{1,s}\,,\\
+					\boldsymbol{y}_i-\boldsymbol{y}\pa{x_i}=O\pa{h_i^{p+1}}\,.
+				\end{gather}
+			\subsubsection{Плотная выдача}
+				\par При уменьшении шага сетки использование методов Рунге-Кутты становится менее эффективными или невозможным из-за необходимости вычислять промежуточные значения функции $\boldsymbol{f}$. Одним из вариантов ускорения процесса вычислений является так называемая плотная выдача, позволяющая вычислять значения $\boldsymbol{y}\pa{x_i+\theta h_i}$ на всём отрезке $0\leqslant\theta\leqslant1$, при этом в худшем случае используя лишь незначительное по сравнению с основным методом количество вычислений функции $\boldsymbol{f}$. Метод $s^{\star}$-шаговой плотной выдачи может быть в общем виде записан как 
+				\begin{equation}
+					\boldsymbol{u}_i\pa{\theta}=\boldsymbol{y}_i+h_i\sum\limits_{j=1}^{s^{\star}}q_j\pa{\theta}\boldsymbol{k}_j\,,
+				\end{equation}
+				где 
+				\begin{equation}
+					\boldsymbol{k}_j=\boldsymbol{f}\pa{x_i+c_jh_i,y_i+h_i\sum\limits_{t=1}^{j-1}a_{j,t}\boldsymbol{k}_t}\,,\qquad j=\overline{1,s^{\star}}\,,
+				\end{equation}
+				при этом $s^{\star}\geqslant s$, а зачастую $s^{\star}\geqslant s+1$, так как значение $\boldsymbol{k}_{s+1}=\boldsymbol{f}\pa{\boldsymbol{x_i}+h_i,\boldsymbol{y}_{i+1}}$ может быть получено с вычислением следующего шага метода при $a_{s+1,t}=b_{t}\,,t=\overline{1,s}$. Порядок $p^{\star}$ плотной выдачи определяется количеством шагов $s^{\star}$ и видом полиномов $q_j\pa{\theta}$ и задаётся условием
+				\begin{equation}
+					\boldsymbol{u}_i\pa{\theta}-\boldsymbol{y}\pa{x_i+\theta h_i}=O\pa{h_i^{p^{\star}-1}}\,.
+				\end{equation}
+				Было показано, что с использованием следующего представления полиномов $q_j\pa{\theta}$
+				\begin{equation}
+					q_j\pa{\theta}=\sum\limits_{l=1}^{p^{\star}}q_{j,l}\theta^l
+				\end{equation}
+				порядок $p^{\star}$ может быть достигнут увеличением количества шагов $s^{\star}$ \cite{dense}. Таким образом непрерывный явный метод Рунге-Кутты может быть задан двумя таблицами
+				\begin{equation}
+					\begin{array}{c|ccccccccc}
+						0 & \multicolumn{9}{c}{}\\
+						c_2 & a_{2,1} & \multicolumn{8}{c}{}\\
+						c_3 & a_{3,1} & a_{3,2} & \multicolumn{7}{c}{}\\
+						\vdots & \vdots & \vdots & \ddots & \multicolumn{6}{c}{}\\
+						c_s & a_{s,1} & a_{s,2} & \dots & a_{s,s-1} & \multicolumn{5}{c}{}\\
+						\hline
+						1 & b_1 & b_2 & \dots & b_{s-1} & b_s & \multicolumn{4}{c}{}\\
+						\hline
+						c_{s+2} & a_{s+2,1} & a_{s+3,2} & \dots & a_{s-1} & a_{s} & a_{s + 1} & \multicolumn{3}{c}{}\\
+						\vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \ddots & \multicolumn{2}{c}{}\\
+						c_{s^{\star}} & a_{s^{\star},1} & a_{s^{\star},2} & \dots & \dots & \dots & \dots & \dots & a_{s^{\star},s^{\star}-1}
+					\end{array}\qquad\qquad
+					\begin{array}{cccc}
+						q_{1,1} & q_{1,2} & \dots & q_{1,p^{\star}}\\
+						\vdots & \vdots & \vdots & \vdots\\
+						q_{s^{\star},1} & q_{s^{\star},2} & \dots & q_{s^{\star},p^{\star}}\\
+					\end{array}
+				\end{equation}
+			\subsubsection{Автоматический контроль шага сетки}
+				\par Методы Рунге-Кутты также позволяют производить автоматический контроль шага с целью оптимизации вычислений и гарантированного поддержания заданной ошибки \cite{dense}. Для этого задаются дополнительные коэффициенты $\hat{b}_j, j=\overline{1,j}$, соответствующие тем же коэффициентам $a_{j,t}$ и $c_j$, обеспечивающие точность $\hat{p}$. На каждом шаге помимо $\boldsymbol{y}_{i+1}$ также вычисляется $\boldsymbol{\hat{y}}_{i+1}$ и производится оценка ошибки
+				\begin{equation}
+					err=\sqrt{\frac{1}{n}\sum\limits_{l=1}^n\pa{\frac{y_{i+1,l}-\hat{y}_{y+1,l}}{Atol+\max\pa{\left|y_{i,l}\right|, \left|y_{y+1,l}\right|}\cdot Rtol}}^2}
+				\end{equation}
+				с последующим обновлением шага сетки
+				\begin{equation}
+					\hat{h}=h_i\cdot\pa{\nicefrac{1}{err}}^{\nicefrac{1}{q+1}}
+				\end{equation}
+				где $q=\min\pa{p,\hat{p}}$. Для увеличения вероятности принятия нового шага на следующем этапе вычислений вводится коэффициент $fac$, который часто выбирается как $fac=0.8\,,0.9\,,\pa{0.25}^{\nicefrac{1}{q+1}}\,,\pa{0.38}^{\nicefrac{1}{q+1}}$. Также для увеличения стабильности вводятся коэффициенты $facmax$ и $facmin$, ограничивающие скорость изменения размера шага. Таким образом,
+				\begin{equation}
+					\hat{h}=h_i\cdot\min\pa{facmax,\max\pa{facmin,fac\cdot\pa{\nicefrac{1}{err}}^{\nicefrac{1}{q+1}}}},.
+				\end{equation}
+				Затем, если $err\leqslant1$ новый шаг сетки принимается и продолжается вычисление решения уравнения с шагом $h_{i+1}=\hat{h}$. Иначе новый шаг отвергается и вычисления производятся заново при $h_i=\hat{h}$.
+		\subsection{Временной ряд импульса звукового сигнала}
+			\subsubsection{Математическая постановка задачи}
+				\par Требуется в области $\Omega=\left\{\pa{x,y,z}\bigr|x_0\leqslant x\leqslant x_1,y_0\leqslant y\leqslant y_1,0\leqslant z\leqslant z_b\right\}$ вычислить в точках приёма $R=\left\{\pa{x,y,z}\in\Omega\right\}$ временной ряд импульса сигнала в источнике $S=\pa{x_0, y_s, z_s}$, задаваемого функцией $g\pa{t}\,,t_0\leqslant t\leqslant t_1$. Импульс $I_r\pa{t}$ в приёмнике $r$ в спектральной области Фурье определяется следующей функцией (здесь и далее оператор $\hat{\pa{\cdot}}$ означает функцию в спектральной области)
+				\begin{equation}
+					\hat{I}_r\pa{\xi}=\overline{\hat{P}\pa{x_r,y_r,z_r, \xi}\cdot e^{-i\tau\omega\pa{\xi}}}\,,
+				\end{equation}
+				где $\omega\pa{\xi}=2\pi f\pa{\xi}$ -- циклическая частота источника, $f\pa{\xi}$ -- частота источника, $\tau$ -- время движения звука из источника в приёмник, $\overline{\pa{\cdot}}$ -- оператор комплексного сопряжения, $\hat{P}$ -- функция сигнала в приёмнике
+				\begin{equation}\label{eq::receiver_signal}
+					\hat{P}\pa{x,y,z,\xi}=p\pa{x,y,z,f\pa{\xi}}\cdot\overline{\hat{g}}\pa{\xi}\,,
+				\end{equation}
+				здесь $p\pa{x,y,z,f\pa{\xi}}$ -- звуковое поле источника, вычисленное для частоты $f\pa{\xi}$. Значение $\hat{g}\pa{\xi}$ также может быть оценено как
+                \begin{equation}\label{eq::ref}
+                    \hat{g}\pa{\xi}=\frac{\hat{I}_{r_0}\pa{\xi}}{p\pa{x,y,z,f\pa{\xi}}}\,,
+                \end{equation}
+                где $r_0$ -- индекс опорного источника.
+			\subsubsection{Преобразование Фурье}
+				\par Преобразование Фурье~\cite{zorich} -- операция, сопоставляющая одной функции вещественной переменной другую функцию вещественной переменной. Эта новая функция описывает коэффициенты при разложении исходной функции на элементарные составляющие -- гармонические колебания с разными частотами. Преобразование Фурье функции $f$ вещественной переменной является интегральным и задаётся следующей формулой:
+				\begin{equation}
+					\hat{f}\pa{\xi}=\frac{1}{\sqrt{2\pi}}\int\limits_{-\infty}^\infty f\pa{t}e^{-it\xi}dt
+				\end{equation}
+				Также справедлива обратная формула, если интеграл имеет смысл:
+				\begin{equation}
+					f\pa{t}=\frac{1}{\sqrt{2\pi}}\int\limits_{-\infty}^\infty\hat{f}\pa{\xi}e^{it\xi}d\xi
+				\end{equation}
+				Важные свойства преобразования Фурье:
+				\begin{subequations}
+					\begin{enumerate}
+						\item Линейность:
+						\begin{equation}
+							\widehat{\pa{\alpha f+\beta g}}=\alpha\hat{f}+\beta\hat{g},\quad\alpha,\beta\in\mathbb{R}
+						\end{equation}
+						\item Дифференцирование:
+						\begin{equation}
+							\widehat{f^{\pa{n}}}=\pa{i\xi}^n\hat{f}
+						\end{equation}
+					\end{enumerate}		
+				\end{subequations}
+        \subsection{Sound exposure level\label{sec::SEL}}
+            \par Требуется в области $\Omega=\left\{\pa{x,y,z}\bigr|x_0\leqslant x\leqslant x_1,y_0\leqslant y\leqslant y_1,z_0\leqslant z\leqslant z_b\right\}$ для отрезка частот $\left[f_1,f_2\right]$ некоторого источника вычислить значение \acrshort{sel}, заданного следующим интегралом
+            \begin{equation}\label{eq::SEL}
+                \operatorname{SEL}\pa{x,y,z,f_1,f_2}=\int\limits_{f_1}^{f_2}\left|\hat{P}\pa{x,y,z,\xi\pa{f}}\right|^2df\,,
+            \end{equation}
+            где $\hat{P}$ -- функция сигнала в точке $\pa{x,y,z}$ \eqref{eq::receiver_signal}. Полученная величина является достаточно грубой, поэтому при численном вычислении  используется простой метод трапеций \cite{davis}
+            \begin{equation}
+                \operatorname{SEL}_{i,j,k}=d_f\sum\limits_{s=0}^{n_f-1}\left|\hat{P}_{i,j,k,s}\right|^2
+            \end{equation}
+            на равномерной сетке
+            \begin{equation}
+                \begin{gathered}
+                    \begin{aligned}
+                        \operatorname{SEL}_{i,j,k}&\approx\operatorname{SEL}\pa{x_i,y_j,z_k,f_1,f_2}\,,\\
+                        \hat{P}_{i,j,k,s}&=\hat{P}\pa{x_i,y_j,z_k,\xi\pa{f_s}}\,,\\
+                    \end{aligned}\\
+                    \begin{aligned}
+                        x_i&=x_0+id_x\,,\qquad i=\overline{0,n_x-1}\,,\\
+                        y_j&=y_0+jd_y\,,\qquad j=\overline{0,n_y-1}\,,\\
+                        z_i&=z_0+kd_z\,,\qquad k=\overline{0,n_z-1}\,,\\
+                        f_s&=f_1+sd_f\,,\qquad s=\overline{0,n_f-1}\,.
+                    \end{aligned}
+                \end{gathered}
+            \end{equation}
+\end{document}
